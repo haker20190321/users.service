@@ -1,5 +1,5 @@
 const chai = require('chai');
-const User = require('../components/user/user');
+const User = require('../service/usersService');
 /** @namespace chai.assert */
 const assert = chai.assert;
 
@@ -8,11 +8,11 @@ chai.should();
 let userId = null,
   accountId = null;
 
-describe('Users tests', function () {
+describe('usersService tests', function () {
   describe('Normal behavior', function () {
     it('should create', function () {
       const userData = {name: 'FooName'};
-      const res = User.create(userData);
+      const res = User.createUser(userData);
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, ['name', 'id', 'accountId']);
@@ -23,7 +23,7 @@ describe('Users tests', function () {
 
     it('should update', function () {
       const userData = {name: 'FooName11'};
-      const res = User.update(userId, userData);
+      const res = User.updateUser(userId, userData);
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, ['name', 'id', 'accountId']);
@@ -32,41 +32,35 @@ describe('Users tests', function () {
     });
 
     it('should get by id', function () {
-      const res = User.getByUserId(userId);
+      const res = User.getUser(userId);
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, ['name', 'id', 'accountId']);
       assert.strictEqual(userId, res.id);
     });
 
-    it('should get by account id', function () {
-      const res = User.getByAccountId(accountId);
-
-      assert.typeOf(res, 'object');
-      assert.hasAllKeys(res, ['name', 'id', 'accountId']);
-      assert.strictEqual(accountId, res.accountId);
-    });
-
     it('should delete by id', function () {
-      const res = User.deleteByUserId(userId);
+      const res = User.deleteUser(userId);
 
       assert.typeOf(res, 'boolean');
       assert.isTrue(res);
     });
 
-    it('should delete by account id', function () {
-      const res = User.deleteByAccountId(accountId);
+    it('should search users', function () {
+      const name = 'User';
+      const res = User.searchUsers({name});
 
-      assert.typeOf(res, 'boolean');
-      assert.isFalse(res); // because it should already be deleted
+      assert.typeOf(res, 'array');
+      assert.isTrue(res.length > 0);
     });
   });
+
   describe('Error behavior', function () {
     it('should create', function () {
       const userData = {name: 'ss'};
 
       try {
-        const res = User.create(userData);
+        const res = User.createUser(userData);
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -76,7 +70,7 @@ describe('Users tests', function () {
 
     it('should update', function () {
       try {
-        const res = User.update(userId, {name: 'ebobo'});
+        const res = User.updateUser(userId, {name: 'ebobo'});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -86,7 +80,7 @@ describe('Users tests', function () {
 
     it('should get by id', function () {
       try {
-        const res = User.getByUserId(userId);
+        const res = User.getUser(userId);
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -94,26 +88,20 @@ describe('Users tests', function () {
       }
     });
 
-    it('should get by account id', function () {
+    it('should delete by id', function () {
+      const res = User.deleteUser(userId);
+
+      assert.isFalse(res);
+    });
+
+    it('should search users', function () {
       try {
-        const res = User.getByAccountId(accountId);
+        const res = User.searchUsers({});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
-        assert.strictEqual(e.message, `user with id ${accountId} is missing`);
+        assert.strictEqual(e.message, 'name is missing');
       }
-    });
-
-    it('should delete by id', function () {
-      const res = User.deleteByUserId(userId);
-
-      assert.isFalse(res);
-    });
-
-    it('should delete by account id', function () {
-      const res = User.deleteByAccountId(userId);
-
-      assert.isFalse(res);
     });
   });
 });

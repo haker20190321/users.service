@@ -5,7 +5,7 @@ module.exports = {
    * @param {Object} userData
    * @return {Object}
    */
-  create: (userData) => {
+  createUser: (userData) => {
     // todo validate params
     // todo create account in oauth2
     // todo create user
@@ -30,7 +30,7 @@ module.exports = {
    * @returns {Object} - updated user
    * @throws {Error}
    */
-  update: (userId, userData) => {
+  updateUser: (userId, userData) => {
     // todo validate params
     // todo update user by id
     // todo return updated user data
@@ -51,7 +51,7 @@ module.exports = {
    * @return {Object}
    * @throws {Error}
    */
-  getByUserId: (userId) => {
+  getUser: (userId) => {
     // todo get user from db
     // todo return user data
     const user = users.find(item => item.id === userId);
@@ -63,42 +63,28 @@ module.exports = {
     return user;
   },
   /**
-   * Get user by oauth2 account id
-   * @param {Number} accountId
-   * @return {Object}
-   * @throws {Error}
-   */
-  getByAccountId: (accountId) => {
-    // todo get user from db by account id
-    // todo return user data
-    const user = users.find(item => item.accountId === accountId);
-
-    if (!user) {
-      throw new Error(`user with id ${accountId} is missing`)
-    }
-
-    return user;
-  },
-  /**
    * Delete user by user id
    *
    * @param {Number} userId
    * @returns {boolean}
    */
-  deleteByUserId: (userId) => {
+  deleteUser: (userId) => {
     const len = users.length;
 
     users = users.filter(item => item.id !== userId);
 
     return users.length < len;
-  }
-  ,
-  deleteByAccountId: (accountId) => {
-    const len = users.length;
+  },
+  searchUsers: (params) => {
+    const {name} = params;
 
-    users = users.filter(item => item.accountId !== accountId);
+    if (!name) {
+      throw new Error('name is missing');
+    }
 
-    return users.length < len;
+    return users.filter(item => {
+      return item.name.toLowerCase().indexOf(name.toLowerCase()) !== -1;
+    })
   }
 };
 

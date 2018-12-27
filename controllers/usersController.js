@@ -1,5 +1,5 @@
 'use strict';
-const User = require('../components/user/user');
+const User = require('../service/usersService');
 
 module.exports = {
   /**
@@ -12,7 +12,7 @@ module.exports = {
     const userData = params.userData.value;
 
     try {
-      response.send(User.create(userData));
+      response.send(User.createUser(userData));
     } catch (e) {
       response.status(500)
         .send({message: e.message, code: 500})
@@ -29,7 +29,7 @@ module.exports = {
     const userData = params.userData.value;
 
     try {
-      response.send(User.update(userId, userData));
+      response.send(User.updateUser(userId, userData));
     } catch (e) {
       response.status(404)
         .send({message: e.message, code: 404})
@@ -40,41 +40,27 @@ module.exports = {
    * @param request
    * @param response
    */
-  getUserById: (request, response) => {
+  getUser: (request, response) => {
     const {params} = request.swagger;
     const userId = params.userId.value;
 
     try {
-      response.send(User.getByUserId(userId));
+      response.send(User.getUser(userId));
     } catch (e) {
       response.status(404)
         .send({message: e.message, code: 404})
     }
   },
   /**
-   * Get user by account id
-   * @param request
-   * @param response
-   */
-  getUserByAccountId: (request, response) => {
-    // TODO implement
-    response.status(200);
-  },
-  /**
    * Delete user by id
    * @param request
    * @param response
    */
-  deleteUserById: (request, response) => {
+  deleteUser: (request, response) => {
     // TODO implement
     response.status(200);
   },
-  /**
-   * Delete user by account id
-   * @param request
-   * @param response
-   */
-  deleteUserByAccountId: (request, response) => {
+  searchUsers: (request, response) => {
     // TODO implement
     response.status(200);
   }
