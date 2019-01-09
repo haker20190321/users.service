@@ -2,32 +2,50 @@ const chai = require('chai');
 const User = require('../service/usersService');
 /** @namespace chai.assert */
 const assert = chai.assert;
+const {connects} = require('../config');
+const db = require('knex')(connects);
 
 chai.should();
 
 let userId = null,
   accountId = null;
+const usersFields = [
+  'id',
+  'account_id',
+  'first_name',
+  'last_name',
+  'middle_name',
+  'birthday',
+  'is_active'
+];
 
 describe('usersService tests', function () {
   describe('Normal behavior', function () {
-    it('should create', function () {
-      const userData = {name: 'FooName'};
-      const res = User.createUser(userData);
+    it('should create', async function () {
+      const userData = {
+        name: 'FooName',
+        password: '11112222',
+        first_name: 'Foo',
+        last_name: 'Bar',
+        middle_name: null,
+        birthday: new Date().toISOString()
+      };
+      const res = await User.createUser(userData, {db});
 
       assert.typeOf(res, 'object');
-      assert.hasAllKeys(res, ['name', 'id', 'accountId']);
+      assert.hasAllKeys(res, usersFields);
 
       userId = res.id;
       accountId = res.accountId;
     });
 
-    it('should update', function () {
-      const userData = {name: 'FooName11'};
-      const res = User.updateUser(userId, userData);
+    it('should update', async function () {
+      const userData = {first_name: 'FooName11'};
+      const res = await User.updateUser(userId, userData, {db});
 
       assert.typeOf(res, 'object');
-      assert.hasAllKeys(res, ['name', 'id', 'accountId']);
-      assert.strictEqual(userData.name, res.name);
+      assert.hasAllKeys(res, usersFields);
+      assert.strictEqual(userData.first_name, res.first_name);
       assert.strictEqual(userId, res.id);
     });
 
@@ -57,10 +75,16 @@ describe('usersService tests', function () {
 
   describe('Error behavior', function () {
     it('should create', function () {
-      const userData = {name: 'ss'};
+      const userData = {
+        name: 'FooName',
+        password: '11112222',
+        first_name: 'Foo',
+        last_name: 'Bar',
+        middle_name: null
+      };
 
       try {
-        const res = User.createUser(userData);
+        const res = User.createUser(userData, {db});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -68,9 +92,10 @@ describe('usersService tests', function () {
       }
     });
 
-    it('should update', function () {
+    it('should update', async function () {
       try {
-        const res = User.updateUser(userId, {name: 'ebobo'});
+        const userData = {first_name: 'FooName11'};
+        const res = await User.updateUser(userId, userData, {db});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);

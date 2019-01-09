@@ -1,48 +1,48 @@
+'use strict';
+
 module.exports = {
   /**
    * Create client
    *
    * @param {Object} userData
+   * @param {Object} ext
    * @return {Object}
    */
-  createUser: (userData) => {
-    // todo validate params
+  createUser: async(userData, ext) => {
+    const {db} = ext;
+
     // todo create account in oauth2
+    const accountId = '38c8f916-5c75-4ea8-a629-518557e04ae0';
     // todo create user
-    // todo return userData + userId + accountId
-    if (!userData || !userData.name || userData.name.length <= 2) {
-      throw new Error('the number of characters in the name must be greater than 2');
-    }
+    const user = {
+      'account_id': accountId,
+      'first_name': userData.first_name || null,
+      'last_name': userData.last_name || null,
+      'middle_name': userData.middle_name || null,
+      'birthday': userData.birthday || null
+    };
 
-    const nextId = users.length + 1;
-    const nextAccountId = users.length + 1;
-    const user = {...userData, id: nextId, accountId: nextAccountId};
+    const res = await db('users_users')
+      .insert(user, '*');
 
-    users.push(user);
-
-    return user;
+    return res[0];
   },
   /**
    * Update user by id
    *
    * @param {Number} userId - user id
    * @param {Object} userData - user date
+   * @param {Object} ext
    * @returns {Object} - updated user
    * @throws {Error}
    */
-  updateUser: (userId, userData) => {
-    // todo validate params
-    // todo update user by id
-    // todo return updated user data
-    let user = users.find((item) => item.id === userId);
+  updateUser: async(userId, userData, ext) => {
+    const {db} = ext;
+    const rows = await db('users_users')
+      .where('id', userId)
+      .update(userData, '*');
 
-    if (!user) {
-      throw new Error(`user with id ${userId} is missing`);
-    }
-
-    user = {...user, ...userData};
-
-    return user;
+    return rows[0];
   },
   /**
    * Get user by user id
