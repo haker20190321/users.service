@@ -1,11 +1,15 @@
-version: '3.0'
+version: '3.2'
 services:
   postgres:
     image: postgres:latest
+    container_name: postgres
+    hostname: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: test_user
       POSTGRES_USER: test_user
       POSTGRES_DB: users
+    volumes:
+      - ./db-data:/var/lib/postgresql/data:rw
     ports:
       - 5432:5432

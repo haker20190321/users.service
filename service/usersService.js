@@ -14,8 +14,8 @@ module.exports = {
       throw new Error('the number of characters in the name must be greater than 2');
     }
 
-    const nextId = users.length +1;
-    const nextAccountId = users.length +1;
+    const nextId = users.length + 1;
+    const nextAccountId = users.length + 1;
     const user = {...userData, id: nextId, accountId: nextAccountId};
 
     users.push(user);
@@ -34,10 +34,10 @@ module.exports = {
     // todo validate params
     // todo update user by id
     // todo return updated user data
-    let user = users.find(item => item.id === userId);
+    let user = users.find((item) => item.id === userId);
 
     if (!user) {
-      throw new Error(`user with id ${userId} is missing`)
+      throw new Error(`user with id ${userId} is missing`);
     }
 
     user = {...user, ...userData};
@@ -54,10 +54,10 @@ module.exports = {
   getUser: (userId) => {
     // todo get user from db
     // todo return user data
-    const user = users.find(item => item.id === userId);
+    const user = users.find((item) => item.id === userId);
 
     if (!user) {
-      throw new Error(`user with id ${userId} is missing`)
+      throw new Error(`user with id ${userId} is missing`);
     }
 
     return user;
@@ -71,7 +71,7 @@ module.exports = {
   deleteUser: (userId) => {
     const len = users.length;
 
-    users = users.filter(item => item.id !== userId);
+    users = users.filter((item) => item.id !== userId);
 
     return users.length < len;
   },
@@ -82,9 +82,7 @@ module.exports = {
       throw new Error('name is missing');
     }
 
-    return users.filter(item => {
-      return item.name.toLowerCase().indexOf(name.toLowerCase()) !== -1;
-    })
+    return users.filter((item) => item.name.toLowerCase().indexOf(name.toLowerCase()) !== -1);
   }
 };
 

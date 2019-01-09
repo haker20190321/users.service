@@ -13,9 +13,9 @@ module.exports = {
 
     try {
       response.send(User.createUser(userData));
-    } catch (e) {
+    } catch(error) {
       response.status(500)
-        .send({message: e.message, code: 500})
+        .send({message: error.message, code: 500});
     }
   },
   /**
@@ -30,9 +30,9 @@ module.exports = {
 
     try {
       response.send(User.updateUser(userId, userData));
-    } catch (e) {
+    } catch(error) {
       response.status(404)
-        .send({message: e.message, code: 404})
+        .send({message: error.message, code: 404});
     }
   },
   /**
@@ -46,9 +46,9 @@ module.exports = {
 
     try {
       response.send(User.getUser(userId));
-    } catch (e) {
+    } catch(error) {
       response.status(404)
-        .send({message: e.message, code: 404})
+        .send({message: error.message, code: 404});
     }
   },
   /**

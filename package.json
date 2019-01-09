@@ -1,27 +1,43 @@
 {
-  "name": "template",
+  "name": "users",
   "version": "1.0.0",
-  "description": "",
+  "description": "Users service",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha",
-    "coverage": "nyc npm test",
-    "coverage-html": "nyc --reporter=html mocha"
+    "test": "mocha --exit",
+    "coverage": "nyc mocha ./test/startService.js ./test/*.js --exit",
+    "coverage-html": "nyc --reporter=html mocha ./test/startService.js ./test/*.js --exit",
+    "lint": "eslint --max-warnings 0 service/ controllers/",
+    "coverage_percents": "nyc check-coverage --lines 80 --functions 80 --branches 80"
   },
-  "author": "",
+  "author": "kmayer",
   "license": "ISC",
   "dependencies": {
-    "express": "4.16.4",
-    "js-yaml": "latest",
+    "@esoft_private/esoft-service": "^1.0.0",
     "knex": "^0.16.3",
-    "oas-tools": "2.1.3",
-    "pg": "^7.7.1",
-    "swagger-stats": "0.95.6"
+    "pg": "^7.7.1"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
+    "eslint": "^5.11.1",
+    "eslint-config-defaults": "^9.0.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.1.0"
+    "nyc": "^13.1.0",
+    "openapi3-generator": "^0.9.1"
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "coverage"
+    ],
+    "reporter": [
+      "json",
+      "html",
+      "text",
+      "lcovonly"
+    ]
   }
 }
