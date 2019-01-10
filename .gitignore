@@ -1,7 +1,7 @@
-# ide
+# ide files
 .idea
 
-# npm
+# npm packages
 node_modules
 package-lock.json
 

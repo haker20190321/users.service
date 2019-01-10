@@ -4,19 +4,17 @@ const User = require('../service/usersService');
 module.exports = {
   /**
    * Create user
-   * @param request
-   * @param response
+   *
+   * @param params
+   * @param ext
+   * @return {Promise<void>}
    */
-  createUser: (request, response) => {
-    const {params} = request.swagger;
-    const userData = params.userData.value;
+  createUser: async(params, ext) => {
+    const {
+      userData
+    } = params;
 
-    try {
-      response.send(User.createUser(userData));
-    } catch(error) {
-      response.status(500)
-        .send({message: error.message, code: 500});
-    }
+    return await User.createUser(userData.value, ext);
   },
   /**
    * Update user

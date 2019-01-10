@@ -13,19 +13,19 @@ module.exports = {
 
     // todo create account in oauth2
     const accountId = '38c8f916-5c75-4ea8-a629-518557e04ae0';
-    // todo create user
-    const user = {
-      'account_id': accountId,
-      'first_name': userData.first_name || null,
-      'last_name': userData.last_name || null,
-      'middle_name': userData.middle_name || null,
-      'birthday': userData.birthday || null
-    };
 
-    const res = await db('users_users')
-      .insert(user, '*');
+    delete userData.password;
+    delete userData.login;
 
-    return res[0];
+    userData['account_id'] = accountId;
+
+    const [user] = await db('users_users')
+      .insert(userData, '*');
+
+    user.id = Number(user.id);
+    user.birthday = user.birthday.toISOString();
+
+    return user;
   },
   /**
    * Update user by id
@@ -38,27 +38,36 @@ module.exports = {
    */
   updateUser: async(userId, userData, ext) => {
     const {db} = ext;
-    const rows = await db('users_users')
+    const [user] = await db('users_users')
       .where('id', userId)
       .update(userData, '*');
 
-    return rows[0];
+    if (!user) {
+      throw new Error(`user with id ${userId} is missing`);
+    }
+
+    user.id = Number(user.id);
+
+    return user;
   },
   /**
    * Get user by user id
    *
    * @param {Number} userId
+   * @param {Object} ext
    * @return {Object}
    * @throws {Error}
    */
-  getUser: (userId) => {
-    // todo get user from db
-    // todo return user data
-    const user = users.find((item) => item.id === userId);
+  getUser: async(userId, ext) => {
+    const {db} = ext;
+    const [user] = await db('users_users')
+      .where('id', userId);
 
     if (!user) {
       throw new Error(`user with id ${userId} is missing`);
     }
+
+    user.id = Number(user.id);
 
     return user;
   },
@@ -66,35 +75,27 @@ module.exports = {
    * Delete user by user id
    *
    * @param {Number} userId
+   * @param {Object} ext
    * @returns {boolean}
    */
-  deleteUser: (userId) => {
-    const len = users.length;
+  deleteUser: async(userId, ext) => {
+    const {db} = ext;
+    const cnt = await db('users_users')
+      .where('id', userId)
+      .del();
 
-    users = users.filter((item) => item.id !== userId);
-
-    return users.length < len;
+    return cnt > 0;
   },
-  searchUsers: (params) => {
-    const {name} = params;
+  /**
+   * Search users
+   *
+   * @param params
+   * @param {Object} ext
+   * @return {*[]}
+   */
+  searchUsers: async(params, ext) => {
+    const {db} = ext;
 
-    if (!name) {
-      throw new Error('name is missing');
-    }
-
-    return users.filter((item) => item.name.toLowerCase().indexOf(name.toLowerCase()) !== -1);
+    return await db('users_users');
   }
 };
-
-let users = [
-  {
-    id: 1,
-    accountId: 1,
-    name: 'UserName1'
-  },
-  {
-    id: 2,
-    accountId: 2,
-    name: 'UserName2'
-  }
-];

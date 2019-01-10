@@ -23,7 +23,7 @@ describe('usersService tests', function () {
   describe('Normal behavior', function () {
     it('should create', async function () {
       const userData = {
-        name: 'FooName',
+        login: 'FooName',
         password: '11112222',
         first_name: 'Foo',
         last_name: 'Bar',
@@ -49,46 +49,41 @@ describe('usersService tests', function () {
       assert.strictEqual(userId, res.id);
     });
 
-    it('should get by id', function () {
-      const res = User.getUser(userId);
+    it('should get by id', async function () {
+      const res = await User.getUser(userId, {db});
 
       assert.typeOf(res, 'object');
-      assert.hasAllKeys(res, ['name', 'id', 'accountId']);
+      assert.hasAllKeys(res, usersFields);
       assert.strictEqual(userId, res.id);
     });
 
-    it('should delete by id', function () {
-      const res = User.deleteUser(userId);
-
-      assert.typeOf(res, 'boolean');
-      assert.isTrue(res);
-    });
-
-    it('should search users', function () {
+    it('should search users', async function () {
       const name = 'User';
-      const res = User.searchUsers({name});
+      const res = await User.searchUsers({name}, {db});
 
       assert.typeOf(res, 'array');
       assert.isTrue(res.length > 0);
     });
+
+    it('should delete by id', async function () {
+      const res = await User.deleteUser(userId, {db});
+
+      assert.typeOf(res, 'boolean');
+      assert.isTrue(res);
+    });
   });
 
   describe('Error behavior', function () {
-    it('should create', function () {
+    it('should create', async function () {
       const userData = {
-        name: 'FooName',
-        password: '11112222',
-        first_name: 'Foo',
-        last_name: 'Bar',
         middle_name: null
       };
 
       try {
-        const res = User.createUser(userData, {db});
+        const res = await User.createUser(userData, {db});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
-        assert.strictEqual(e.message, 'the number of characters in the name must be greater than 2')
       }
     });
 
@@ -103,9 +98,9 @@ describe('usersService tests', function () {
       }
     });
 
-    it('should get by id', function () {
+    it('should get by id', async function () {
       try {
-        const res = User.getUser(userId);
+        const res = await User.getUser(userId, {db});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -113,20 +108,19 @@ describe('usersService tests', function () {
       }
     });
 
-    it('should delete by id', function () {
-      const res = User.deleteUser(userId);
-
-      assert.isFalse(res);
-    });
-
-    it('should search users', function () {
+    it('should search users', async function () {
       try {
-        const res = User.searchUsers({});
+        const res = await User.searchUsers({}, {db});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
-        assert.strictEqual(e.message, 'name is missing');
       }
+    });
+
+    it('should delete by id', async function () {
+      const res = await User.deleteUser(userId, {db});
+
+      assert.isFalse(res);
     });
   });
 });

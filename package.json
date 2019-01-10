@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "mocha --exit",
-    "coverage": "nyc mocha ./test/startService.js ./test/*.js --exit",
-    "coverage-html": "nyc --reporter=html mocha ./test/startService.js ./test/*.js --exit",
+    "coverage": "nyc mocha ./test/*.js --exit",
+    "coverage-html": "nyc --reporter=html mocha ./test/*.js --exit",
     "lint": "eslint --max-warnings 0 service/ controllers/",
     "coverage_percents": "nyc check-coverage --lines 80 --functions 80 --branches 80"
   },
