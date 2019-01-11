@@ -2,7 +2,7 @@ const chai = require('chai');
 const User = require('../service/usersService');
 /** @namespace chai.assert */
 const assert = chai.assert;
-const {connects} = require('../config');
+const {knex: connects} = require('../config');
 const db = require('knex')(connects);
 
 chai.should();

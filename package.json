@@ -1,5 +1,5 @@
 {
-  "name": "users",
+  "name": "users-service",
   "version": "1.0.0",
   "description": "Users service",
   "main": "index.js",

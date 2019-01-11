@@ -3,10 +3,8 @@
 const Service = require('@esoft_private/esoft-service');
 const path = require('path');
 const {
-  connects: {
-    connection
-  }
-} = require('./config');
+  connection
+} = require('./config').knex;
 
 const service = new Service({
   specDoc: path.resolve(__dirname, './specifications/users.service.yaml'),

@@ -1,7 +1,7 @@
 'use strict';
 
-const {connects} = require('./config');
+const {knex} = require('./config');
 
 module.exports = {
-  development: connects
+  development: knex
 };
