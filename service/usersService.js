@@ -12,17 +12,17 @@ module.exports = {
     const {db} = ext;
 
     // todo create account in oauth2
-    const accountId = '38c8f916-5c75-4ea8-a629-518557e04ae0';
+    const accountId = 22;
 
     delete userData.password;
     delete userData.login;
+    delete userData.email;
 
     userData['account_id'] = accountId;
 
     const [user] = await db('users_users')
       .insert(userData, '*');
 
-    user.id = Number(user.id);
     user.birthday = user.birthday.toISOString();
 
     return user;

@@ -5,10 +5,10 @@ exports.up = function(knex, Promise) {
     knex.schema.hasTable(TABLE_NAME).then((exist) => {
       if (!exist) {
         return knex.schema.createTable(TABLE_NAME, (table) => {
-          table.bigIncrements('id')
+          table.increments('id')
             .primary()
             .comment('Идентификатор');
-          table.uuid('account_id')
+          table.integer('account_id')
             .notNullable()
             .comment('Идентификатор аккаунта oauth-сервера');
           table.string('first_name')
