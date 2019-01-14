@@ -1,14 +1,9 @@
-const chai = require('chai');
+const assert = require('chai').assert;
 const User = require('../service/usersService');
-/** @namespace chai.assert */
-const assert = chai.assert;
 const {knex: connects} = require('../config');
 const db = require('knex')(connects);
 
-chai.should();
-
-let userId = null,
-  accountId = null;
+const makeUser = require('./makeUser');
 const usersFields = [
   'id',
   'account_id',
@@ -16,36 +11,43 @@ const usersFields = [
   'last_name',
   'middle_name',
   'birthday',
-  'is_active'
+  'is_active',
+  'login'
 ];
+let userId = null,
+  accountId = null;
 
 describe('usersService tests', function () {
   describe('Normal behavior', function () {
+    const userData = makeUser();
+
     it('should create', async function () {
-      const userData = {
-        login: 'FooName',
-        password: '11112222',
-        first_name: 'Foo',
-        last_name: 'Bar',
-        middle_name: null,
-        birthday: new Date().toISOString()
-      };
       const res = await User.createUser(userData, {db});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
 
       userId = res.id;
-      accountId = res.accountId;
+      accountId = res.account_id;
+    });
+
+    it('should create exist login', async function () {
+      try {
+        const res = await User.createUser(userData, {db});
+        assert.isUndefined(res);
+      } catch (e) {
+        assert.instanceOf(e, Error);
+        assert.equal(e.message, `CreateUser: User with login ${userData.login} is exist`);
+      }
     });
 
     it('should update', async function () {
-      const userData = {first_name: 'FooName11'};
-      const res = await User.updateUser(userId, userData, {db});
+      const first_name = 'updated_name';
+      const res = await User.updateUser(userId, {first_name}, {db});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
-      assert.strictEqual(userData.first_name, res.first_name);
+      assert.strictEqual(first_name, res.first_name);
       assert.strictEqual(userId, res.id);
     });
 
@@ -74,10 +76,10 @@ describe('usersService tests', function () {
   });
 
   describe('Error behavior', function () {
+    const userData = makeUser();
+
     it('should create', async function () {
-      const userData = {
-        middle_name: null
-      };
+      userData.middle_name = null;
 
       try {
         const res = await User.createUser(userData, {db});
@@ -89,8 +91,8 @@ describe('usersService tests', function () {
 
     it('should update', async function () {
       try {
-        const userData = {first_name: 'FooName11'};
-        const res = await User.updateUser(userId, userData, {db});
+        const first_name = 'FooName11';
+        const res = await User.updateUser(userId, {first_name}, {db});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);

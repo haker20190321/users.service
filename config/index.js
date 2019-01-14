@@ -20,10 +20,11 @@ module.exports = {
     }
   },
   oauth: {
-    'addr': '',
-    'client_id': '',
-    'client_secret': '',
+    'hostname': 'oauth2.esoft.cloud',
+    'path': '/api/v1',
+    'client_id': 'dev_ecosystem_001',
+    'client_secret': 't715mrk8RF9Q6ZUq',
     'redirect_uri': '',
-    'api_key': ''
+    'api_key': 'YWpQM2JVNGJHQkI3OXVnbnVoQlByY2dXVXNSVGdaaDZrZGpnNDVuTlBuaDZ1ZWZSIDEwLjEyLjEuNzk='
   }
 };

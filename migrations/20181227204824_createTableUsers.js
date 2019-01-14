@@ -11,6 +11,9 @@ exports.up = function(knex, Promise) {
           table.integer('account_id')
             .notNullable()
             .comment('Идентификатор аккаунта oauth-сервера');
+          table.string('login')
+            .notNullable()
+            .comment('Логин');
           table.string('first_name')
             .notNullable()
             .comment('Имя');

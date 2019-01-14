@@ -1,31 +1,51 @@
 'use strict';
+const checkAccount = require('../components/auth/checkAccount');
+const createAccount = require('../components/auth/createAccount');
 
 module.exports = {
   /**
-   * Create client
+   * Create user
    *
    * @param {Object} userData
-   * @param {Object} ext
-   * @return {Object}
+   * @param {Object} db
+   * @return {Promise<void>}
    */
-  createUser: async(userData, ext) => {
-    const {db} = ext;
+  createUser: async(userData, {db}) => {
+    try {
+      // проверить существование аккаунта с таким логином
+      let {id: accountId} = await checkAccount(userData.login, true);
 
-    // todo create account in oauth2
-    const accountId = 22;
+      // если аккаунт существует, то ищем пользователя
+      // иначе создаем аккаунт
+      if (accountId) {
+        const cnt = await db('users_users')
+          .where('account_id', accountId)
+          .count('id');
+        // если находим то ошибка
+        if (cnt) {
+          throw new Error(`User with login ${userData.login} is exist`);
+        }
+      } else {
+        accountId = await createAccount(userData);
+      }
 
-    delete userData.password;
-    delete userData.login;
-    delete userData.email;
+      // создаем пользователя
+      const [user] = await db('users_users').insert({
+        'account_id': accountId,
+        'login': userData.login,
+        'first_name': userData.first_name,
+        'last_name': userData.last_name,
+        'middle_name': userData.middle_name,
+        'birthday': userData.birthday
+      }, '*');
 
-    userData['account_id'] = accountId;
+      // todo knex приводит дату к объекту Date
+      user.birthday = user.birthday.toISOString();
 
-    const [user] = await db('users_users')
-      .insert(userData, '*');
-
-    user.birthday = user.birthday.toISOString();
-
-    return user;
+      return user;
+    } catch(error) {
+      throw new Error(`CreateUser: ${error.message}`);
+    }
   },
   /**
    * Update user by id
@@ -36,8 +56,7 @@ module.exports = {
    * @returns {Object} - updated user
    * @throws {Error}
    */
-  updateUser: async(userId, userData, ext) => {
-    const {db} = ext;
+  updateUser: async(userId, userData, {db}) => {
     const [user] = await db('users_users')
       .where('id', userId)
       .update(userData, '*');
@@ -58,8 +77,7 @@ module.exports = {
    * @return {Object}
    * @throws {Error}
    */
-  getUser: async(userId, ext) => {
-    const {db} = ext;
+  getUser: async(userId, {db}) => {
     const [user] = await db('users_users')
       .where('id', userId);
 
@@ -78,8 +96,7 @@ module.exports = {
    * @param {Object} ext
    * @returns {boolean}
    */
-  deleteUser: async(userId, ext) => {
-    const {db} = ext;
+  deleteUser: async(userId, {db}) => {
     const cnt = await db('users_users')
       .where('id', userId)
       .del();
@@ -93,9 +110,5 @@ module.exports = {
    * @param {Object} ext
    * @return {*[]}
    */
-  searchUsers: async(params, ext) => {
-    const {db} = ext;
-
-    return await db('users_users');
-  }
+  searchUsers: async(params, {db}) => await db('users_users')
 };
