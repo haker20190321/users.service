@@ -3,7 +3,8 @@ const User = require('../service/usersService');
 const {knex: connects} = require('../config');
 const db = require('knex')(connects);
 
-const makeUser = require('./makeUser');
+const {makeUser, sleep} = require('./helper');
+const timeout = 300;
 const usersFields = [
   'id',
   'account_id',
@@ -29,6 +30,8 @@ describe('usersService tests', function () {
 
       userId = res.id;
       accountId = res.account_id;
+
+      await sleep(timeout);
     });
 
     it('should create exist login', async function () {
@@ -39,6 +42,8 @@ describe('usersService tests', function () {
         assert.instanceOf(e, Error);
         assert.equal(e.message, `CreateUser: User with login ${userData.login} is exist`);
       }
+
+      await sleep(timeout);
     });
 
     it('should update', async function () {
@@ -49,6 +54,8 @@ describe('usersService tests', function () {
       assert.hasAllKeys(res, usersFields);
       assert.strictEqual(first_name, res.first_name);
       assert.strictEqual(userId, res.id);
+
+      await sleep(timeout);
     });
 
     it('should get by id', async function () {
@@ -57,6 +64,8 @@ describe('usersService tests', function () {
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
       assert.strictEqual(userId, res.id);
+
+      await sleep(timeout);
     });
 
     it('should search users', async function () {
@@ -65,6 +74,8 @@ describe('usersService tests', function () {
 
       assert.typeOf(res, 'array');
       assert.isTrue(res.length > 0);
+
+      await sleep(timeout);
     });
 
     it('should delete by id', async function () {
@@ -72,6 +83,8 @@ describe('usersService tests', function () {
 
       assert.typeOf(res, 'boolean');
       assert.isTrue(res);
+
+      await sleep(timeout);
     });
   });
 
@@ -87,6 +100,8 @@ describe('usersService tests', function () {
       } catch (e) {
         assert.instanceOf(e, Error);
       }
+
+      await sleep(timeout);
     });
 
     it('should update', async function () {
@@ -98,6 +113,8 @@ describe('usersService tests', function () {
         assert.instanceOf(e, Error);
         assert.strictEqual(e.message, `user with id ${userId} is missing`);
       }
+
+      await sleep(timeout);
     });
 
     it('should get by id', async function () {
@@ -108,6 +125,8 @@ describe('usersService tests', function () {
         assert.instanceOf(e, Error);
         assert.strictEqual(e.message, `user with id ${userId} is missing`);
       }
+
+      await sleep(timeout);
     });
 
     it('should search users', async function () {
@@ -117,12 +136,16 @@ describe('usersService tests', function () {
       } catch (e) {
         assert.instanceOf(e, Error);
       }
+
+      await sleep(timeout);
     });
 
     it('should delete by id', async function () {
       const res = await User.deleteUser(userId, {db});
 
       assert.isFalse(res);
+
+      await sleep(timeout);
     });
   });
 });

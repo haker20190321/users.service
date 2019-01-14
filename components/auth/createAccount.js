@@ -27,29 +27,33 @@ module.exports = (userData) => {
   return new Promise((resolve, reject) => {
     const request = http.request(options, (response) => {
       if (response.statusCode !== 200) {
-        return reject(new Error(`Server returned status code ${response.statusCode}.`));
+        return reject(new Error(`Auth-server returned '${response.statusMessage}' ` +
+          `with code ${response.statusCode}.`));
       }
 
-      let result = '';
+      const chunks = [];
 
-      response.on('data', (chunk) => result += chunk.toString());
+      response.on('data', (chunk) => chunks.push(chunk));
       response.on('end', () => {
         try {
-          const {user_id: userId} = JSON.parse(result);
+          const body = JSON.parse(Buffer.concat(chunks));
+          // eslint-disable-next-line id-blacklist
+          const {data: resData} = body;
+          const {user_id: userId} = resData;
 
           if (typeof userId === 'number') {
             return resolve(userId);
           }
 
           return reject(new Error(`Type of userId must be number, ${typeof result} given. ` +
-            `Response: ${result}`));
+            `Response: ${body}`));
         } catch(error) {
           return reject(error);
         }
       });
     });
 
-    request.on('error', (error) => reject(error));
+    request.on('error', reject);
     request.write(params);
     request.end();
   });

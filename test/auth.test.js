@@ -1,9 +1,11 @@
 const assert = require('chai').assert;
-
 const checkAccount = require('../components/auth/checkAccount');
 const createAccount = require('../components/auth/createAccount');
 
-const userData = require('./makeUser')();
+const {sleep, makeUser} = require('./helper');
+const timeout = 500;
+
+const userData = makeUser();
 
 describe('Auth components test', function () {
   describe('Normal behavior', function () {
@@ -12,12 +14,16 @@ describe('Auth components test', function () {
 
       assert.isBoolean(exist);
       assert.isFalse(exist);
+
+      await sleep(timeout);
     });
 
     it('should createAccount', async function () {
       const accountId = await createAccount(userData);
 
       assert.isNumber(accountId);
+
+      await sleep(timeout);
     });
 
     it('should checkAccount with data after create', async function () {
@@ -31,6 +37,8 @@ describe('Auth components test', function () {
       assert.isString(id); // сервер возвращает id строкой
       assert.isString(login);
       // assert.isArray(clients); // todo нужен массив clients
+
+      await sleep(timeout);
     });
   });
 
@@ -40,6 +48,8 @@ describe('Auth components test', function () {
 
       assert.isBoolean(exist);
       assert.isFalse(exist);
+
+      await sleep(timeout);
     });
 
     it('should createAccount', async function () {
@@ -48,8 +58,10 @@ describe('Auth components test', function () {
         assert.isUndefined(accountId);
       } catch (e) {
         assert.instanceOf(e, Error);
-        assert.equal(e.message, 'Type of userId must be number, string given. Response: {"error":"user_already_exists","error_description":"Пользователь уже существует"}\n');
+        assert.equal(e.message, 'Auth-server returned \'Conflict\' with code 409.');
       }
+
+      await sleep(timeout);
     });
 
     it('should checkAccount with data after create', async function () {
@@ -63,6 +75,8 @@ describe('Auth components test', function () {
       assert.isUndefined(id); // сервер возвращает id строкой
       assert.isUndefined(login);
       assert.isUndefined(clients); // todo нужен массив clients
+
+      await sleep(timeout);
     });
   });
 });

@@ -20,6 +20,9 @@ const usersFields = [
   'login'
 ];
 
+const {makeUser, sleep} = require('./helper');
+const timeout = 300;
+
 describe('usersController test', function () {
   it('should controller has methods', function () {
     assert.hasAllKeys(usersController, [
@@ -31,7 +34,7 @@ describe('usersController test', function () {
     ]);
   });
 
-  const userData = require('./makeUser')();
+  const userData = makeUser();
   let user = {};
 
   it('should createUser', async function () {
@@ -43,6 +46,8 @@ describe('usersController test', function () {
 
     assert.typeOf(user, 'object');
     assert.hasAllKeys(user, usersFields);
+
+    await sleep(timeout);
   });
 
   it('should updateUser', async function () {
@@ -61,6 +66,8 @@ describe('usersController test', function () {
     assert.hasAllKeys(res, usersFields);
     assert.strictEqual(first_name, res.first_name);
     assert.strictEqual(user.id, res.id);
+
+    await sleep(timeout);
   });
 
   it('should getUser', async function () {
@@ -73,6 +80,8 @@ describe('usersController test', function () {
     assert.typeOf(res, 'object');
     assert.hasAllKeys(res, usersFields);
     assert.strictEqual(user.id, res.id);
+
+    await sleep(timeout);
   });
 
   it('should deleteUser', async function () {
@@ -84,6 +93,8 @@ describe('usersController test', function () {
     const res = await usersController.deleteUser(params, {db});
 
     assert.isTrue(res);
+
+    await sleep(timeout);
   });
 
   it('should searchUsers', async function () {
@@ -99,5 +110,7 @@ describe('usersController test', function () {
     res.forEach(user => {
       assert.hasAllKeys(user, usersFields);
     });
+
+    await sleep(timeout);
   });
 });

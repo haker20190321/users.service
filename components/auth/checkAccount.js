@@ -17,7 +17,8 @@ module.exports = (login, withData = false) => {
     const request = http.request(options, (response) => {
       try {
         if (response.statusCode !== 200) {
-          throw new Error(`Server returned status code ${response.statusCode}`);
+          return reject(new Error(`Auth-server returned '${response.statusMessage}' ` +
+            `with code ${response.statusCode}.`));
         }
 
         let result = '';
