@@ -110,5 +110,5 @@ module.exports = {
    * @param {Object} ext
    * @return {*[]}
    */
-  searchUsers: async(params, {db}) => await db('users_users')
+  searchUsers: async(params, {db}) => await db('users_users').limit(10)
 };

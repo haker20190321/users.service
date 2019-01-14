@@ -4,62 +4,35 @@ const User = require('../service/usersService');
 module.exports = {
   /**
    * Create user
-   *
    * @param params
    * @param ext
    * @return {Promise<void>}
    */
-  createUser: async(params, ext) => {
-    const {
-      userData
-    } = params;
-
-    return await User.createUser(userData.value, ext);
-  },
+  createUser: async({userData}, ext) => await User.createUser(userData.value, ext),
   /**
    * Update user
-   * @param request
-   * @param response
+   * @param params
+   * @param ext
    */
-  updateUser: (request, response) => {
-    const {params} = request.swagger;
-    const userId = params.userId.value;
-    const userData = params.userData.value;
-
-    try {
-      response.send(User.updateUser(userId, userData));
-    } catch(error) {
-      response.status(404)
-        .send({message: error.message, code: 404});
-    }
-  },
+  updateUser: async({userId, userData}, ext) =>
+    await User.updateUser(userId.value, userData.value, ext),
   /**
    * Get user by id
-   * @param request
-   * @param response
+   * @param params
+   * @param ext
    */
-  getUser: (request, response) => {
-    const {params} = request.swagger;
-    const userId = params.userId.value;
-
-    try {
-      response.send(User.getUser(userId));
-    } catch(error) {
-      response.status(404)
-        .send({message: error.message, code: 404});
-    }
-  },
+  getUser: async({userId}, ext) => await User.getUser(userId.value, ext),
   /**
    * Delete user by id
-   * @param request
-   * @param response
+   * @param params
+   * @param ext
    */
-  deleteUser: (request, response) => {
-    // TODO implement
-    response.status(200);
-  },
-  searchUsers: (request, response) => {
-    // TODO implement
-    response.status(200);
-  }
+  deleteUser: async({userId}, ext) => await User.deleteUser(userId.value, ext),
+  /**
+   * Search users
+   * @param params
+   * @param ext
+   * @return {Promise<void>}
+   */
+  searchUsers: async({params}, ext) => await User.searchUsers(params.value, ext)
 };
