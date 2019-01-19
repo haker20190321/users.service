@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
     accountId: {
       allowNull: false,
       type: DataTypes.INTEGER,
-      unique: true,
+      unique: true
     },
     login: {
       allowNull: false,
       type: DataTypes.STRING,
-      unique: true,
+      unique: true
     },
     firstName: {
       allowNull: false,
@@ -33,14 +33,47 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
+    },
+    createdAt: {
+      allowNull: false,
+      type: DataTypes.DATE,
+      get() {
+        return toISOString(this, 'createdAt');
+      }
+    },
+    updatedAt: {
+      allowNull: false,
+      type: DataTypes.DATE,
+      get() {
+        return toISOString(this, 'updatedAt');
+      }
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      get() {
+        return toISOString(this, 'deletedAt');
+      }
     }
   }, {
     timestamps: true,
     paranoid: true,
     tableName: 'Users'
   });
-  User.associate = function(models) {
+  User.associate = function() {
     // associations can be defined here
   };
   return User;
+};
+
+/**
+ * If field of model is instance of Date returning field.toISOString()
+ *
+ * @param {Object} model
+ * @param {string} field
+ * @return {any}
+ */
+const toISOString = (model, field) => {
+  const val = model.getDataValue(field);
+
+  return val instanceof Date ? val.toISOString() : val;
 };

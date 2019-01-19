@@ -4,7 +4,7 @@ const {knex: connects} = require('../config');
 const Models = require('../db/models');
 
 const {makeUser, sleep} = require('./helper');
-const timeout = 300;
+const timeout = 0;
 const usersFields = [
   'id',
   'accountId',

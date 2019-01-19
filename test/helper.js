@@ -13,7 +13,7 @@ module.exports.makeUser = () => {
   };
 };
 
-module.exports.sleep = (ms = 0) => {
+module.exports.sleep = (ms = 1000) => {
   return new Promise(resolve => {
     setTimeout(() => {
       resolve();

@@ -4,8 +4,9 @@ info:
   description: Users service
   version: 1.0.0
 servers:
-  - url: http://localhost:{port}
-    description: The production API server
+  - url: http://localhost:{port}/
+    description: Local address for localization service
+    x-env: development
     variables:
       port:
         enum:
@@ -137,38 +138,47 @@ components:
         id:
           type: integer
           format: int32
-        account_id:
+        accountId:
           type: integer
           format: int32
-        last_name:
+        lastName:
           type: string
-        first_name:
+        firstName:
           type: string
-        middle_name:
+        middleName:
           type: string
-        is_active:
+        isActive:
           type: boolean
-        birthday:
+        createdAt:
           type: string
-          format: date-time
+          format: 'date-time'
+        updatedAt:
+          type: string
+          format: 'date-time'
+        deletedAt:
+          type: string
+          format: 'date-time'
+          nullable: true
       example:
           id: 1
-          account_id: 123
-          last_name: Foo
-          first_name: Bar
-          middle_name: Ivanovich
-          birthday: 1988-12-12T00:00:00Z
-          is_active: true
+          accountId: 123
+          lastName: Foo
+          firstName: Bar
+          middleName: Ivanovich
+          isActive: true
+          createdAt: 1988-12-12T00:00:00Z
+          updatedAt: 1988-12-12T00:00:00Z
+          deletedAt: null
     UserData:
       type: object
       properties:
-        last_name:
+        lastName:
           type: string
           description: Фамилия
-        first_name:
+        firstName:
           type: string
           description: Имя
-        middle_name:
+        middleName:
           type: string
           description: Отчество
         login:
@@ -182,15 +192,10 @@ components:
           type: string
           format: email
           description: Email
-        birthday:
-          type: string
-          format: date-time
-          description: Дата рождения
       example:
-          last_name: Foo
-          first_name: Bar
-          middle_name: Ivanovich
+          lastName: Foo
+          firstName: Bar
+          middleName: Ivanovich
           login: foo_bar
           email: foo@bar.com
           password: 11112222d
-          birthday: 1988-12-12T00:00:00Z

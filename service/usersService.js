@@ -49,7 +49,7 @@ module.exports = {
         ...userData
       });
 
-      return user.dataValues;
+      return user.get();
     } catch(error) {
       throw new Error(`CreateUser: ${error.message}`);
     }
@@ -74,7 +74,9 @@ module.exports = {
       fields: ['firstName', 'lastName', 'middleName']
     });
 
-    return user.dataValues;
+    return user.get({
+      plain: true
+    });
   },
   /**
    * Get user by user id
@@ -91,7 +93,9 @@ module.exports = {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    return user.dataValues;
+    return user.get({
+      plain: true
+    });
   },
   /**
    * Delete user by user id
@@ -114,9 +118,13 @@ module.exports = {
    * @param {Object} ext
    * @return {*[]}
    */
-  searchUsers: async({limit, offset, where}, {Models}) => await Models.User.findAll({
-    limit,
-    offset,
-    where
-  })
+  searchUsers: async({limit, offset, where}, {Models}) => {
+    const users = await Models.User.findAll({
+      limit,
+      offset,
+      where
+    });
+
+    return users.map((item) => item.get({plain: true}));
+  }
 };

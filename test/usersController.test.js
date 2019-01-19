@@ -1,7 +1,5 @@
 const chai = require('chai');
-const {knex: connects} = require('../config');
-const db = require('knex')(connects);
-
+const Models = require('../db/models');
 const usersController = require('../controllers/usersController');
 
 /** @namespace chai.assert */
@@ -11,17 +9,19 @@ chai.should();
 
 const usersFields = [
   'id',
-  'account_id',
-  'first_name',
-  'last_name',
-  'middle_name',
-  'birthday',
-  'is_active',
-  'login'
+  'accountId',
+  'firstName',
+  'lastName',
+  'middleName',
+  'isActive',
+  'login',
+  'createdAt',
+  'updatedAt',
+  'deletedAt'
 ];
 
 const {makeUser, sleep} = require('./helper');
-const timeout = 300;
+const timeout = 0;
 
 describe('usersController test', function () {
   it('should controller has methods', function () {
@@ -42,7 +42,7 @@ describe('usersController test', function () {
       userData: {
         value: userData
       }
-    }, {db});
+    }, {Models});
 
     assert.typeOf(user, 'object');
     assert.hasAllKeys(user, usersFields);
@@ -51,20 +51,20 @@ describe('usersController test', function () {
   });
 
   it('should updateUser', async function () {
-    const first_name = 'updated_name';
+    const firstName = 'updated_name';
     const params = {
       userId: {
         value: user.id
       },
       userData: {
-        value: {first_name}
+        value: {firstName}
       }
     };
-    const res = await usersController.updateUser(params, {db});
+    const res = await usersController.updateUser(params, {Models});
 
     assert.typeOf(res, 'object');
     assert.hasAllKeys(res, usersFields);
-    assert.strictEqual(first_name, res.first_name);
+    assert.strictEqual(firstName, res.firstName);
     assert.strictEqual(user.id, res.id);
 
     await sleep(timeout);
@@ -76,7 +76,7 @@ describe('usersController test', function () {
         value: user.id
       }
     };
-    const res = await usersController.getUser(params, {db});
+    const res = await usersController.getUser(params, {Models});
     assert.typeOf(res, 'object');
     assert.hasAllKeys(res, usersFields);
     assert.strictEqual(user.id, res.id);
@@ -90,7 +90,7 @@ describe('usersController test', function () {
         value: user.id
       }
     };
-    const res = await usersController.deleteUser(params, {db});
+    const res = await usersController.deleteUser(params, {Models});
 
     assert.isTrue(res);
 
@@ -104,7 +104,7 @@ describe('usersController test', function () {
       }
     };
 
-    const res = await usersController.searchUsers(params, {db});
+    const res = await usersController.searchUsers(params, {Models});
 
     assert.isArray(res);
     res.forEach(user => {
