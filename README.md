@@ -1,9 +1,16 @@
-## I am a dummy user service.
-But this does not mean that my users are too stupid.
+## I am a dummy service of Users.
 
 ##### Install dependencies
 ```bash
 npm install
+```
+##### Run migrations
+```bash
+npm run migrate
+```
+##### Rollback migrations
+```bash
+npm run rollback
 ```
 ##### Run tests
 ```bash
@@ -18,4 +25,4 @@ npm run coverage
 npm start
 ````
 
-##### Show api documents in browser `http://localhost:8085/docs`
+##### Show api documents in browser `http://localhost:8085/docs/ui`

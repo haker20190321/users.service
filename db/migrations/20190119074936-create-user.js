@@ -49,15 +49,14 @@ module.exports = {
         type: DataTypes.DATE
       }
     })
-      .then((res) => {
+      .then(() => {
         return Promise.all([
           queryInterface.addIndex(tableName, {fields: ['firstName', 'lastName', 'middleName']}),
           queryInterface.addIndex(tableName, {fields: ['deletedAt']}),
           queryInterface.addIndex(tableName, {fields: ['createdAt']}),
           queryInterface.addIndex(tableName, {fields: ['isActive']}),
           queryInterface.addIndex(tableName, {fields: ['accountId']}),
-          queryInterface.addIndex(tableName, {fields: ['login']}),
-
+          queryInterface.addIndex(tableName, {fields: ['login']})
         ]);
       });
   },
