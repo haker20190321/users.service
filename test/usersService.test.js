@@ -75,7 +75,7 @@ describe('usersService tests', function () {
         limit: 10,
         offset: 0,
         where: {
-          id: {[Symbol.for('gte')]: 28}
+          id: {[Symbol.for('gte')]: 0}
         }
       }, {Models});
 
