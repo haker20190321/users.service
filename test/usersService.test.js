@@ -1,19 +1,21 @@
 const assert = require('chai').assert;
 const User = require('../service/usersService');
 const {knex: connects} = require('../config');
-const db = require('knex')(connects);
+const Models = require('../db/models');
 
 const {makeUser, sleep} = require('./helper');
 const timeout = 300;
 const usersFields = [
   'id',
-  'account_id',
-  'first_name',
-  'last_name',
-  'middle_name',
-  'birthday',
-  'is_active',
-  'login'
+  'accountId',
+  'firstName',
+  'lastName',
+  'middleName',
+  'isActive',
+  'login',
+  'createdAt',
+  'updatedAt',
+  'deletedAt'
 ];
 let userId = null,
   accountId = null;
@@ -23,20 +25,20 @@ describe('usersService tests', function () {
     const userData = makeUser();
 
     it('should create', async function () {
-      const res = await User.createUser(userData, {db});
+      const res = await User.createUser(userData, {Models});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
 
       userId = res.id;
-      accountId = res.account_id;
+      accountId = res.accountId;
 
       await sleep(timeout);
     });
 
     it('should create exist login', async function () {
       try {
-        const res = await User.createUser(userData, {db});
+        const res = await User.createUser(userData, {Models});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -47,19 +49,19 @@ describe('usersService tests', function () {
     });
 
     it('should update', async function () {
-      const first_name = 'updated_name';
-      const res = await User.updateUser(userId, {first_name}, {db});
+      const firstName = 'updated_name';
+      const res = await User.updateUser(userId, {firstName, createdAt: 11}, {Models});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
-      assert.strictEqual(first_name, res.first_name);
+      assert.strictEqual(firstName, res.firstName);
       assert.strictEqual(userId, res.id);
 
       await sleep(timeout);
     });
 
     it('should get by id', async function () {
-      const res = await User.getUser(userId, {db});
+      const res = await User.getUser(userId, {Models});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
@@ -69,8 +71,13 @@ describe('usersService tests', function () {
     });
 
     it('should search users', async function () {
-      const name = 'User';
-      const res = await User.searchUsers({name}, {db});
+      const res = await User.searchUsers({
+        limit: 10,
+        offset: 0,
+        where: {
+          id: {[Symbol.for('gte')]: 28}
+        }
+      }, {Models});
 
       assert.typeOf(res, 'array');
       assert.isTrue(res.length > 0);
@@ -79,7 +86,7 @@ describe('usersService tests', function () {
     });
 
     it('should delete by id', async function () {
-      const res = await User.deleteUser(userId, {db});
+      const res = await User.deleteUser(userId, {Models});
 
       assert.typeOf(res, 'boolean');
       assert.isTrue(res);
@@ -92,10 +99,10 @@ describe('usersService tests', function () {
     const userData = makeUser();
 
     it('should create', async function () {
-      userData.middle_name = null;
+      userData.lastName = null;
 
       try {
-        const res = await User.createUser(userData, {db});
+        const res = await User.createUser(userData, {Models});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -107,7 +114,7 @@ describe('usersService tests', function () {
     it('should update', async function () {
       try {
         const first_name = 'FooName11';
-        const res = await User.updateUser(userId, {first_name}, {db});
+        const res = await User.updateUser(userId, {first_name}, {Models});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -119,7 +126,7 @@ describe('usersService tests', function () {
 
     it('should get by id', async function () {
       try {
-        const res = await User.getUser(userId, {db});
+        const res = await User.getUser(userId, {Models});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -131,7 +138,7 @@ describe('usersService tests', function () {
 
     it('should search users', async function () {
       try {
-        const res = await User.searchUsers({}, {db});
+        const res = await User.searchUsers({}, {Models});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -141,7 +148,7 @@ describe('usersService tests', function () {
     });
 
     it('should delete by id', async function () {
-      const res = await User.deleteUser(userId, {db});
+      const res = await User.deleteUser(userId, {Models});
 
       assert.isFalse(res);
 

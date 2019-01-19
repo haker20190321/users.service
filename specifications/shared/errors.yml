@@ -1,0 +1,33 @@
+
+components:
+  responses:
+    BadRequest:
+      description: Bad input parameter
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+    GeneralError:
+      description: Fatal error
+      content:
+        application/json:
+          schema:
+            "$ref": "#/components/schemas/Error"
+  schemas:
+    Error:
+      type: object
+      properties:
+        reason:
+          type: string
+        meta:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+      example:
+        reason: Returned data as content = 'application/json' is not valid
+        meta:
+          code: INVALID_TYPE
+          message: Expected type array but found type object

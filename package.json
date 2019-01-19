@@ -16,11 +16,10 @@
   "dependencies": {
     "@esoft_private/esoft-service": "^1.0.0",
     "axios": "^0.18.0",
-    "knex": "^0.16.3",
-    "pg": "^7.7.1",
-    "request": "latest",
-    "ssha": "^1.0.1",
-    "form-data": "latest"
+    "pg": "^7.8.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.42.0",
+    "ssha": "^1.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
@@ -30,12 +29,15 @@
     "eslint-config-defaults": "^9.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
-    "randomstring": "^1.1.5"
+    "randomstring": "^1.1.5",
+    "sequelize-cli": "^5.4.0"
   },
   "nyc": {
     "exclude": [
       "test",
-      "coverage"
+      "coverage",
+      "db",
+      "components"
     ],
     "reporter": [
       "json",

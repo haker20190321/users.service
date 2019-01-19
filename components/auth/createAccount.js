@@ -4,6 +4,11 @@ const querystring = require('querystring');
 const {oauth} = require('../../config');
 
 module.exports = (userData) => {
+  //todo remove after ldap stabilization
+  return new Promise((resolve) => resolve(
+    Math.floor(Math.random() * 10000000)
+  ));
+
   const params = querystring.stringify({
     login: userData.login,
     hash: ssha.create(userData.password),

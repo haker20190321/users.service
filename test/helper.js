@@ -6,14 +6,14 @@ module.exports.makeUser = () => {
     login,
     password: login,
     email: `${login}@email.test`,
-    first_name: `${login}_fn`,
-    last_name: `${login}_ln`,
-    middle_name: `${login}_pn`,
+    firstName: `${login}_fn`,
+    lastName: `${login}_ln`,
+    middleName: `${login}_pn`,
     birthday: new Date().toISOString()
   };
 };
 
-module.exports.sleep = (ms = 1000) => {
+module.exports.sleep = (ms = 0) => {
   return new Promise(resolve => {
     setTimeout(() => {
       resolve();

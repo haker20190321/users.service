@@ -1,0 +1,257 @@
+openapi: 3.0.0
+info:
+  title: Localization
+  description: Localization service
+  version: 1.0.0
+servers:
+- url: http://localhost:{port}/
+  description: Local address for localization service
+  variables:
+    port:
+      enum:
+      - '10001'
+      default: '10001'
+tags:
+- name: admins
+  description: Operations available for admins
+- name: developers
+  description: Operations available for developers
+paths:
+  "/langs":
+    get:
+      x-router-controller: localization
+      description: List of available langs
+      tags:
+      - developers
+      - admins
+      operationId: getLangs
+      responses:
+        '200':
+          description: Result of langs
+          content:
+            application/json:
+              schema:
+                example:
+                - en-US
+                - ru-RU
+                type: array
+                items:
+                  type: string
+        '400':
+          "$ref": "shared/errors.yml#/components/responses/BadRequest"
+        5XX:
+          "$ref": "shared/errors.yml#/components/responses/GeneralError"
+  "/localization/list":
+    post:
+      x-router-controller: localization
+      description: List of available localizations
+      tags:
+      - developers
+      - admins
+      operationId: getLocalizations
+      requestBody:
+        x-name: vars
+        required: false
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/LocalizationListVars"
+      responses:
+        '200':
+          description: Result of localizations
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - "$ref": "#/components/schemas/LocalizationAsArray"
+                - "$ref": "shared/types.yml#/components/schemas/SimpleObject"
+              example:
+              - key: Name
+                value: Name
+                lang: en-US
+              - key: Name
+                value: Наименование
+                lang: ru-RU
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+  "/localization/translate":
+    post:
+      x-router-controller: localization
+      description: Translate text
+      tags:
+      - developers
+      - admins
+      operationId: translateText
+      requestBody:
+        x-name: vars
+        required: false
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/LocalizationTranslateVars"
+      responses:
+        '200':
+          description: Result of translate text
+          content:
+            application/json:
+              schema:
+                "$ref": "shared/types.yml#/components/schemas/SimpleObject"
+              example:
+                en-US: 'Переведенный текст: Name, Client'
+                ru-RU: 'Переведенный текст: Наименование, Клиент'
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+  "/localization/test":
+    post:
+      x-router-controller: localization
+      description: Test translate text
+      tags:
+      - admins
+      operationId: testPerfomance
+      requestBody:
+        x-name: vars
+        required: false
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/LocalizationTestVars"
+      responses:
+        '200':
+          description: Result of test translate text
+          content:
+            application/json:
+              schema:
+                "$ref": "shared/types.yml#/components/schemas/SimpleObject"
+              example:
+                en-US: 'Переведенный текст: Name, Client'
+                ru-RU: 'Переведенный текст: Наименование, Клиент'
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+  "/localization":
+    put:
+      x-router-controller: localization
+      description: Set lang for localization
+      tags:
+      - admins
+      operationId: setLocalizations
+      requestBody:
+        x-name: vars
+        required: false
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/LocalizationAsArray"
+      responses:
+        '200':
+          description: Result of set localizations
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: 'true'
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+components:
+  schemas:
+    LocalizationListVars:
+      required:
+      - keys
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - array
+          - object
+          default: object
+        langs:
+          type: array
+          items:
+            type: string
+          default:
+          - ru-RU
+        keys:
+          type: array
+          items:
+            type: string
+      example:
+        type: array
+        langs:
+        - ru-RU
+        - en-US
+        keys:
+        - Name
+        - Client
+    LocalizationTranslateVars:
+      required:
+      - source
+      type: object
+      properties:
+        source:
+          type: string
+        langs:
+          type: array
+          items:
+            type: string
+          default:
+          - ru-RU
+      example:
+        source: 'Переведенный текст: l10n(Name), l10n(Client)'
+        langs:
+        - en-US
+        - ru-RU
+    LocalizationTestVars:
+      type: object
+      properties:
+        langs:
+          type: array
+          items:
+            type: string
+          default:
+          - ru-RU
+        limit:
+          type: integer
+          default: 100
+      example:
+        limit: 100
+        langs:
+        - ru-RU
+    LocalizationAsArray:
+      type: array
+      items:
+        "$ref": "#/components/schemas/Localization"
+      example:
+      - key: Name
+        value: Name
+        lang: en-US
+      - key: Name
+        value: Наименование
+        lang: ru-RU
+    Localization:
+      required:
+      - key
+      - value
+      - lang
+      type: object
+      properties:
+        key:
+          type: string
+          example: name
+        value:
+          type: string
+          example: Наименование
+        lang:
+          type: string
+          example: ru-RU
+      example:
+        key: Name
+        value: Наименование
+        lang: ru-RU

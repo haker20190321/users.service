@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Users
+  description: Users service
+  version: 1.0.0
+servers:
+  - url: http://localhost:{port}
+    description: The production API server
+    variables:
+      port:
+        enum:
+          - '8085'
+        default: '8085'
+tags:
+  - name: Users
+    description: Everything about users
+  - name: Roles
+    description: Everything about users roles
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      description: Users search
+      summary: Users search
+      operationId: searchUsers
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Users search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+      x-router-controller: usersController
+    post:
+      tags:
+        - Users
+      description: Создание пользователя
+      summary: Создание пользователя
+      operationId: createUser
+      requestBody:
+        x-name: userData
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserData'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+      x-router-controller: usersController
+  /users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        description: Id of user
+        schema:
+          type: integer
+    get:
+      tags:
+        - Users
+      description: Получение пользователя по идентификатору
+      summary: Получение пользователя по идентификатору
+      operationId: getUser
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+      x-router-controller: usersController
+    post:
+      tags:
+        - Users
+      description: Обновление пользователя
+      summary: Обновление пользователя
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserData'
+      responses:
+        200:
+          description: Success
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+      x-router-controller: usersController
+    delete:
+      tags:
+        - Users
+      description: Удаление пользователя по идентификатору
+      summary: Удаление пользователя по идентификатору
+      operationId: deleteUser
+      responses:
+        200:
+          description: Success
+        '400':
+          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+      x-router-controller: usersController
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        account_id:
+          type: integer
+          format: int32
+        last_name:
+          type: string
+        first_name:
+          type: string
+        middle_name:
+          type: string
+        is_active:
+          type: boolean
+        birthday:
+          type: string
+          format: date-time
+      example:
+          id: 1
+          account_id: 123
+          last_name: Foo
+          first_name: Bar
+          middle_name: Ivanovich
+          birthday: 1988-12-12T00:00:00Z
+          is_active: true
+    UserData:
+      type: object
+      properties:
+        last_name:
+          type: string
+          description: Фамилия
+        first_name:
+          type: string
+          description: Имя
+        middle_name:
+          type: string
+          description: Отчество
+        login:
+          type: string
+          description: Логин
+        password:
+          type: string
+          format: password
+          description: Пароль
+        email:
+          type: string
+          format: email
+          description: Email
+        birthday:
+          type: string
+          format: date-time
+          description: Дата рождения
+      example:
+          last_name: Foo
+          first_name: Bar
+          middle_name: Ivanovich
+          login: foo_bar
+          email: foo@bar.com
+          password: 11112222d
+          birthday: 1988-12-12T00:00:00Z

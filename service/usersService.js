@@ -8,41 +8,48 @@ module.exports = {
    *
    * @param {Object} userData
    * @param {Object} db
+   * @param {Object} Models
    * @return {Promise<void>}
    */
-  createUser: async(userData, {db}) => {
+  createUser: async(userData, {Models}) => {
     try {
       // проверить существование аккаунта с таким логином
-      let {id: accountId} = await checkAccount(userData.login, true);
+      const {Op} = Models.Sequelize;
+      const {login} = userData;
+      let {id: accountId} = await checkAccount(login, true);
 
       // если аккаунт существует, то ищем пользователя
       // иначе создаем аккаунт
       if (accountId) {
-        const cnt = await db('users_users')
-          .where('account_id', accountId)
-          .count('id');
-        // если находим то ошибка
+        const cnt = await Models.User.count({
+          where: {
+            [Op.or]: [
+              {accountId: {[Op.eq]: accountId}},
+              {login: {[Op.eq]: login}}
+            ]
+          }
+        });
         if (cnt) {
           throw new Error(`User with login ${userData.login} is exist`);
         }
       } else {
+        const cnt = await Models.User.count({
+          where: {login: {[Op.eq]: login}}
+        });
+        if (cnt) {
+          throw new Error(`User with login ${userData.login} is exist`);
+        }
+
         accountId = await createAccount(userData);
       }
 
       // создаем пользователя
-      const [user] = await db('users_users').insert({
-        'account_id': accountId,
-        'login': userData.login,
-        'first_name': userData.first_name,
-        'last_name': userData.last_name,
-        'middle_name': userData.middle_name,
-        'birthday': userData.birthday
-      }, '*');
+      const user = await Models.User.create({
+        accountId,
+        ...userData
+      });
 
-      // todo knex приводит дату к объекту Date
-      user.birthday = user.birthday.toISOString();
-
-      return user;
+      return user.dataValues;
     } catch(error) {
       throw new Error(`CreateUser: ${error.message}`);
     }
@@ -56,18 +63,18 @@ module.exports = {
    * @returns {Object} - updated user
    * @throws {Error}
    */
-  updateUser: async(userId, userData, {db}) => {
-    const [user] = await db('users_users')
-      .where('id', userId)
-      .update(userData, '*');
+  updateUser: async(userId, userData, {Models}) => {
+    const user = await Models.User.findByPk(userId);
 
     if (!user) {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    user.id = Number(user.id);
+    await user.update(userData, {
+      fields: ['firstName', 'lastName', 'middleName']
+    });
 
-    return user;
+    return user.dataValues;
   },
   /**
    * Get user by user id
@@ -77,17 +84,14 @@ module.exports = {
    * @return {Object}
    * @throws {Error}
    */
-  getUser: async(userId, {db}) => {
-    const [user] = await db('users_users')
-      .where('id', userId);
+  getUser: async(userId, {Models}) => {
+    const user = await Models.User.findByPk(userId);
 
     if (!user) {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    user.id = Number(user.id);
-
-    return user;
+    return user.dataValues;
   },
   /**
    * Delete user by user id
@@ -96,10 +100,10 @@ module.exports = {
    * @param {Object} ext
    * @returns {boolean}
    */
-  deleteUser: async(userId, {db}) => {
-    const cnt = await db('users_users')
-      .where('id', userId)
-      .del();
+  deleteUser: async(userId, {Models}) => {
+    const cnt = await Models.User.destroy({
+      where: {id: {[Models.Sequelize.Op.eq]: userId}}
+    });
 
     return cnt > 0;
   },
@@ -110,5 +114,9 @@ module.exports = {
    * @param {Object} ext
    * @return {*[]}
    */
-  searchUsers: async(params, {db}) => await db('users_users').limit(10)
+  searchUsers: async({limit, offset, where}, {Models}) => await Models.User.findAll({
+    limit,
+    offset,
+    where
+  })
 };

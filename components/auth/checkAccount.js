@@ -2,6 +2,9 @@ const http = require('https');
 const {oauth} = require('../../config');
 
 module.exports = (login, withData = false) => {
+  //todo remove after ldap stabilization
+  return new Promise((resolve) => resolve(false));
+
   const options = {
     hostname: oauth.hostname,
     path: `${oauth.path}/accounts?api_key=${oauth.api_key}&login=${login}`,

@@ -3,8 +3,9 @@
 const Service = require('@esoft_private/esoft-service');
 const path = require('path');
 const {
-  connection
-} = require('./config').knex;
+  knex: {connection}
+} = require('./config');
+const Models = require('./db/models');
 
 const service = new Service({
   specDoc: path.resolve(__dirname, './specifications/users.service.yaml'),
@@ -15,5 +16,7 @@ const service = new Service({
     connection
   }
 });
+
+service.use('Models', Models);
 
 service.initialize();
