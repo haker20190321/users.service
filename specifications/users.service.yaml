@@ -1,11 +1,11 @@
 openapi: 3.0.0
 info:
   title: Users
-  description: Users service
+  description: Сервис пользователей
   version: 1.0.0
 servers:
   - url: http://localhost:{port}/
-    description: Local address for localization service
+    description: Локальный сервис
     x-env: development
     variables:
       port:
@@ -14,9 +14,9 @@ servers:
         default: '8085'
 tags:
   - name: Users
-    description: Everything about users
+    description: Пользователи
   - name: Roles
-    description: Everything about users roles
+    description: Роли
 paths:
   /users:
     post:
@@ -34,7 +34,7 @@ paths:
               $ref: '#/components/schemas/UserData'
       responses:
         '200':
-          description: Success
+          description: Пользователь добавлен
           content:
             application/json:
               schema:
@@ -48,8 +48,8 @@ paths:
     post:
       tags:
       - Users
-      description: Users search
-      summary: Users search
+      description: Поиск пользователей
+      summary: Поиск пользователей
       operationId: searchUsers
       requestBody:
         x-name: searchParams
@@ -59,7 +59,7 @@ paths:
               $ref: '#/components/schemas/SearchParams'
       responses:
         '200':
-          description: Users search results
+          description: Найденные пользователи
           content:
             application/json:
               schema:
@@ -78,7 +78,7 @@ paths:
       - name: userId
         in: path
         required: true
-        description: Id of user
+        description: Id пользователя
         schema:
           type: integer
     get:
@@ -89,7 +89,7 @@ paths:
       operationId: getUser
       responses:
         200:
-          description: Success
+          description: Пользователь найден
           content:
             application/json:
               schema:
@@ -113,7 +113,7 @@ paths:
               $ref: '#/components/schemas/UserData'
       responses:
         200:
-          description: Success
+          description: Пользователь обновлен
           content:
             application/json:
               schema:
@@ -131,7 +131,7 @@ paths:
       operationId: deleteUser
       responses:
         200:
-          description: Success
+          description: Пользователь удален
         '400':
           $ref: 'shared/errors.yml#/components/responses/BadRequest'
         5XX:
@@ -223,9 +223,32 @@ components:
               - login:
                   $ilike:
                     '%bar%'
+          default: {}
         limit:
+          description: Лимит
           type: integer
           example: 10
+          default: 10
+          minimum: 1
+          maximum: 100
         offset:
+          description: Оффсет
           type: integer
           example: 0
+          default: 0
+        order:
+          description: Сортировки
+          type: array
+          default: []
+          items:
+            type: array
+            maxItems: 2
+            items:
+              type: string
+          example:
+            -
+              - firstName
+              - DESC
+            -
+              - lastName
+              - DESC

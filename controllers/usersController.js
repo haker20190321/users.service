@@ -34,8 +34,5 @@ module.exports = {
    * @param ext
    * @return {Promise<void>}
    */
-  searchUsers: async({searchParams}, ext) => {
-    const {value: params} = searchParams;
-    return await User.searchUsers(params, ext);
-  }
+  searchUsers: async({searchParams}, ext) => await User.searchUsers(searchParams.value, ext)
 };

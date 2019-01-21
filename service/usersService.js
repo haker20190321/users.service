@@ -118,11 +118,12 @@ module.exports = {
    * @param {Object} ext
    * @return {*[]}
    */
-  searchUsers: async({limit, offset, where}, {Models}) => {
+  searchUsers: async({limit, offset, where, order}, {Models}) => {
     const users = await Models.User.findAll({
       limit,
       offset,
-      where
+      where,
+      order
     });
 
     return users.map((item) => item.get({plain: true}));
