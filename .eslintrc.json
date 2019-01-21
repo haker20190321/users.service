@@ -84,6 +84,12 @@
    "template-curly-spacing": [2, "never"],
    "no-useless-escape": 0,
    "indent": [2, 2, {"SwitchCase": 1, "VariableDeclarator": 1}],
+   "padding-line-between-statements": [
+     "error",
+     {"blankLine": "always", "prev": ["const", "let", "var"], "next": "*" },
+     {"blankLine": "any",    "prev": ["const", "let", "var"], "next": ["const", "let", "var"]},
+     {"blankLine": "always", "prev": "*",                     "next": "return" }
+   ],
 
    // nodejs
 
