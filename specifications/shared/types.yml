@@ -1,6 +1,0 @@
-components:
-  schemas:
-    SimpleObject:
-      type: object
-      properties: {}
-      example: {}

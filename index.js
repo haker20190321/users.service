@@ -3,7 +3,8 @@
 const Service = require('@esoft_private/esoft-service');
 const path = require('path');
 const {
-  knex: {connection}
+  knex: {connection},
+  closeTimeout
 } = require('./config');
 const Models = require('./db/models');
 
@@ -13,7 +14,8 @@ const service = new Service({
   validator: true,
   controllers: path.resolve(__dirname, 'controllers'),
   db: {
-    connection
+    connection,
+    closeTimeout
   }
 });
 

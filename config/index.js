@@ -19,6 +19,7 @@ module.exports = {
       directory: './migrations'
     }
   },
+  closeTimeout: 300,
   oauth: {
     'hostname': 'oauth2.esoft.cloud',
     'path': '/api/v1',

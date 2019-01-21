@@ -1,5 +1,9 @@
 ## I am a dummy service of Users.
 
+##### Before run
+- Change configs in `config/index.js` and `config/sequelize.js`, or
+- For local using start database on docker-compose `docker-compose up -d`
+
 ##### Install dependencies
 ```bash
 npm install

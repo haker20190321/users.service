@@ -1,3 +1,5 @@
+const {closeTimeout} = require('./index');
+
 module.exports = {
   development: {
     dialect: 'postgres',
@@ -11,10 +13,10 @@ module.exports = {
       write: {host: 'localhost', username: 'test_user', password: 'test_user'}
     },
     pool: {
-      max: 10,
+      max: 50,
       min: 0,
-      acquire: 30000,
-      idle: 10000
+      acquire: 5000,
+      idle: closeTimeout * 1000
     }
   },
   test: {
@@ -29,6 +31,6 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOSTNAME,
-    dialect: 'mysql'
+    dialect: 'postgres'
   }
 };
