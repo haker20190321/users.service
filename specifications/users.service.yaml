@@ -19,33 +19,6 @@ tags:
     description: Everything about users roles
 paths:
   /users:
-    get:
-      tags:
-        - Users
-      description: Users search
-      summary: Users search
-      operationId: searchUsers
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Users search results
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-
-        '400':
-          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
-        5XX:
-          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
-      x-router-controller: usersController
     post:
       tags:
         - Users
@@ -67,10 +40,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+          $ref: 'shared/errors.yml#/components/responses/BadRequest'
         5XX:
-          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+          $ref: 'shared/errors.yml#/components/responses/GeneralError'
       x-router-controller: usersController
+  /users/search:
+    post:
+      tags:
+      - Users
+      description: Users search
+      summary: Users search
+      operationId: searchUsers
+      requestBody:
+        x-name: searchParams
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchParams'
+      responses:
+        '200':
+          description: Users search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+        '400':
+          $ref: 'shared/errors.yml#/components/responses/BadRequest'
+        5XX:
+          $ref: 'shared/errors.yml#/components/responses/GeneralError'
+      x-router-controller: usersController
+
   /users/{userId}:
     parameters:
       - name: userId
@@ -93,9 +95,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+          $ref: 'shared/errors.yml#/components/responses/BadRequest'
         5XX:
-          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+          $ref: 'shared/errors.yml#/components/responses/GeneralError'
       x-router-controller: usersController
     post:
       tags:
@@ -104,6 +106,7 @@ paths:
       summary: Обновление пользователя
       operationId: updateUser
       requestBody:
+        x-name: userData
         content:
           application/json:
             schema:
@@ -111,10 +114,14 @@ paths:
       responses:
         200:
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         '400':
-          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+          $ref: 'shared/errors.yml#/components/responses/BadRequest'
         5XX:
-          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+          $ref: 'shared/errors.yml#/components/responses/GeneralError'
       x-router-controller: usersController
     delete:
       tags:
@@ -126,9 +133,9 @@ paths:
         200:
           description: Success
         '400':
-          "$ref": 'shared/errors.yml#/components/responses/BadRequest'
+          $ref: 'shared/errors.yml#/components/responses/BadRequest'
         5XX:
-          "$ref": 'shared/errors.yml#/components/responses/GeneralError'
+          $ref: 'shared/errors.yml#/components/responses/GeneralError'
       x-router-controller: usersController
 components:
   schemas:
@@ -147,8 +154,11 @@ components:
           type: string
         middleName:
           type: string
+          nullable: true
         isActive:
           type: boolean
+          nullable: true
+          default: true
         createdAt:
           type: string
           format: 'date-time'
@@ -199,3 +209,23 @@ components:
           login: foo_bar
           email: foo@bar.com
           password: 11112222d
+    SearchParams:
+      type: object
+      properties:
+        where:
+          type: object
+          properties: {}
+          description: See http://docs.sequelizejs.com/manual/tutorial/querying.html#where
+          example:
+            $or:
+              - id:
+                  $gte: 2
+              - login:
+                  $ilike:
+                    '%bar%'
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

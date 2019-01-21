@@ -99,7 +99,7 @@ describe('usersController test', function () {
 
   it('should searchUsers', async function () {
     const params = {
-      params: {
+      searchParams: {
         value: {}
       }
     };

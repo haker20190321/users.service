@@ -9,7 +9,7 @@ const env = process.env.NODE_ENV || 'development';
 const config = require('../../config/sequelize')[env];
 const db = {};
 const sequelize = new Sequelize({...config,
-  operatorsAliases: false,
+  operatorsAliases: Sequelize.Op.LegacyAliases, // for use deprecated operators
   logging: env === 'development' && process.env.DEBUG === '1',
   define: {
     underscored: false,
