@@ -1,6 +1,5 @@
 const assert = require('chai').assert;
 const User = require('../service/usersService');
-const {knex: connects} = require('../config');
 const Models = require('../db/models');
 const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
 const logger = loggerFunc('Test');
@@ -32,7 +31,6 @@ describe('usersService tests', function () {
       assert.hasAllKeys(res, usersFields);
 
       userId = res.id;
-      accountId = res.accountId;
 
       await sleep(timeout);
     });
