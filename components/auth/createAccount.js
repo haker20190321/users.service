@@ -13,9 +13,9 @@ module.exports = (userData) => {
   const params = querystring.stringify({
     login: userData.login,
     hash: ssha.create(userData.password),
-    fn: userData.first_name,
-    ln: userData.last_name,
-    pn: userData.middle_name,
+    fn: userData.firstName,
+    ln: userData.lastName,
+    pn: userData.middleName,
     email: userData.email
   });
 
@@ -43,16 +43,15 @@ module.exports = (userData) => {
       response.on('end', () => {
         try {
           const body = JSON.parse(Buffer.concat(chunks));
-          // eslint-disable-next-line id-blacklist
-          const {data: resData} = body;
-          const {user_id: userId} = resData;
+          const {data: resData} = body; // eslint-disable-line id-blacklist
+          const {user_id: userId} = resData || {};
 
-          if (typeof userId === 'number') {
-            return resolve(userId);
+          if (typeof userId !== 'number') {
+            return reject(new Error(`Type of userId must be number, ${typeof userId} given. ` +
+              `Response: ${body}`));
           }
 
-          return reject(new Error(`Type of userId must be number, ${typeof userId} given. ` +
-            `Response: ${body}`));
+          return resolve(userId);
         } catch(error) {
           return reject(error);
         }

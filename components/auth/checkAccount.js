@@ -30,16 +30,17 @@ module.exports = (login, withData = false) => {
           `with code ${response.statusCode}.`));
       }
 
-      let result = '';
+      const chunks = [];
 
-      response.on('data', (chunk) => result += chunk.toString());
+      response.on('data', (chunk) => chunks.push(chunk));
       response.on('end', () => {
         try {
-          const result = JSON.parse(result);
+          const result = JSON.parse(Buffer.concat(chunks));
+
+          return resolve(result);
         } catch(error) {
           return reject(new Error(`CheckAccount: ${error.message}`));
         }
-        return resolve(result);
       });
     });
 
