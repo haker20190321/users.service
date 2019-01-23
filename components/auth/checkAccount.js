@@ -16,7 +16,7 @@ module.exports = (login, withData = false) => {
     hostname: oauth.hostname,
     path: `${oauth.path}/accounts?api_key=${oauth.apiKey}&login=${login}`,
     method: 'GET',
-    timeout: 1000
+    timeout: oauth.requestTimeout
   };
 
   if (withData) {
