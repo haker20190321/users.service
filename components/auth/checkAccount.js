@@ -37,7 +37,7 @@ module.exports = (login, withData = false) => {
         try {
           const result = JSON.parse(result);
         } catch(error) {
-          reject(new Error(`CheckAccount: ${error.message}`));
+          return reject(new Error(`CheckAccount: ${error.message}`));
         }
         return resolve(result);
       });
