@@ -18,7 +18,6 @@
   "license": "ISC",
   "dependencies": {
     "@esoft_private/esoft-service": "^1.6.3",
-    "axios": "^0.18.0",
     "pg": "^7.8.0",
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.42.0",
