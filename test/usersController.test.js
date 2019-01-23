@@ -1,6 +1,9 @@
 const chai = require('chai');
 const Models = require('../db/models');
 const usersController = require('../controllers/usersController');
+const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
+const logger = loggerFunc('Test');
+
 
 /** @namespace chai.assert */
 const assert = chai.assert;
@@ -21,6 +24,7 @@ const usersFields = [
 
 const {makeUser, sleep} = require('./helper');
 const timeout = 0;
+const errorLog = console.warn;
 
 describe('usersController test', function () {
   it('should controller has methods', function () {
@@ -41,7 +45,7 @@ describe('usersController test', function () {
       userData: {
         value: userData
       }
-    }, {Models});
+    }, {Models, logger}, errorLog);
 
     assert.typeOf(user, 'object');
     assert.hasAllKeys(user, usersFields);
@@ -59,7 +63,7 @@ describe('usersController test', function () {
         value: {firstName}
       }
     };
-    const res = await usersController.updateUser(params, {Models});
+    const res = await usersController.updateUser(params, {Models, logger}, errorLog);
 
     assert.typeOf(res, 'object');
     assert.hasAllKeys(res, usersFields);
@@ -75,7 +79,7 @@ describe('usersController test', function () {
         value: user.id
       }
     };
-    const res = await usersController.getUser(params, {Models});
+    const res = await usersController.getUser(params, {Models, logger},errorLog);
     assert.typeOf(res, 'object');
     assert.hasAllKeys(res, usersFields);
     assert.strictEqual(user.id, res.id);
@@ -89,7 +93,7 @@ describe('usersController test', function () {
         value: user.id
       }
     };
-    const res = await usersController.deleteUser(params, {Models});
+    const res = await usersController.deleteUser(params, {Models, logger}, errorLog);
 
     assert.isTrue(res);
 
@@ -103,7 +107,7 @@ describe('usersController test', function () {
       }
     };
 
-    const res = await usersController.searchUsers(params, {Models});
+    const res = await usersController.searchUsers(params, {Models, logger}, errorLog);
 
     assert.isArray(res);
     res.forEach(user => {

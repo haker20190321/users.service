@@ -2,6 +2,8 @@ const assert = require('chai').assert;
 const User = require('../service/usersService');
 const {knex: connects} = require('../config');
 const Models = require('../db/models');
+const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
+const logger = loggerFunc('Test');
 
 const {makeUser, sleep} = require('./helper');
 const timeout = 0;
@@ -24,7 +26,7 @@ describe('usersService tests', function () {
     const userData = makeUser();
 
     it('should create', async function () {
-      const res = await User.createUser(userData, {Models});
+      const res = await User.createUser(userData, {Models, logger});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
@@ -37,7 +39,7 @@ describe('usersService tests', function () {
 
     it('should create exist login', async function () {
       try {
-        const res = await User.createUser(userData, {Models});
+        const res = await User.createUser(userData, {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -49,7 +51,7 @@ describe('usersService tests', function () {
 
     it('should update', async function () {
       const firstName = 'updated_name';
-      const res = await User.updateUser(userId, {firstName, createdAt: 11}, {Models});
+      const res = await User.updateUser(userId, {firstName, createdAt: 11}, {Models, logger});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
@@ -60,7 +62,7 @@ describe('usersService tests', function () {
     });
 
     it('should get by id', async function () {
-      const res = await User.getUser(userId, {Models});
+      const res = await User.getUser(userId, {Models, logger});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
@@ -76,7 +78,7 @@ describe('usersService tests', function () {
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, {Models});
+      }, {Models, logger});
 
       assert.typeOf(res, 'array');
       assert.isTrue(res.length > 0);
@@ -85,7 +87,7 @@ describe('usersService tests', function () {
     });
 
     it('should delete by id', async function () {
-      const res = await User.deleteUser(userId, {Models});
+      const res = await User.deleteUser(userId, {Models, logger});
 
       assert.typeOf(res, 'boolean');
       assert.isTrue(res);
@@ -101,7 +103,7 @@ describe('usersService tests', function () {
       userData.lastName = null;
 
       try {
-        const res = await User.createUser(userData, {Models});
+        const res = await User.createUser(userData, {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -113,7 +115,7 @@ describe('usersService tests', function () {
     it('should update', async function () {
       try {
         const first_name = 'FooName11';
-        const res = await User.updateUser(userId, {first_name}, {Models});
+        const res = await User.updateUser(userId, {first_name}, {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -125,7 +127,7 @@ describe('usersService tests', function () {
 
     it('should get by id', async function () {
       try {
-        const res = await User.getUser(userId, {Models});
+        const res = await User.getUser(userId, {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -137,7 +139,7 @@ describe('usersService tests', function () {
 
     it('should search users', async function () {
       try {
-        const res = await User.searchUsers({}, {Models});
+        const res = await User.searchUsers({}, {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -147,7 +149,7 @@ describe('usersService tests', function () {
     });
 
     it('should delete by id', async function () {
-      const res = await User.deleteUser(userId, {Models});
+      const res = await User.deleteUser(userId, {Models, logger});
 
       assert.isFalse(res);
 
