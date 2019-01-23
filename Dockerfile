@@ -1,4 +1,4 @@
-FROM node:11.5.0-alpine
+FROM node:10.15.0-alpine
 WORKDIR /usr/src/app
 RUN apk update && apk add git openssh
 COPY package*.json ./
@@ -7,5 +7,5 @@ RUN npm install
 COPY . .
 RUN rm -rf .ssh /root/.ssh
 
-EXPOSE 8085
+EXPOSE 10004
 CMD [ "npm", "start" ]
