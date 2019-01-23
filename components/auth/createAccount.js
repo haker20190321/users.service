@@ -21,13 +21,13 @@ module.exports = (userData) => {
 
   const options = {
     hostname: `${oauth.hostname}`,
-    path: `${oauth.path}/accounts?api_key=${oauth.api_key}`,
+    path: `${oauth.path}/accounts?api_key=${oauth.apiKey}`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': Buffer.byteLength(params)
     },
-    timeout: 1000
+    timeout: oauth.requestTimeout
   };
 
   return new Promise((resolve, reject) => {
@@ -51,7 +51,7 @@ module.exports = (userData) => {
             return resolve(userId);
           }
 
-          return reject(new Error(`Type of userId must be number, ${typeof result} given. ` +
+          return reject(new Error(`Type of userId must be number, ${typeof userId} given. ` +
             `Response: ${body}`));
         } catch(error) {
           return reject(error);

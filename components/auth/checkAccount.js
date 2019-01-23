@@ -14,7 +14,7 @@ module.exports = (login, withData = false) => {
   // eslint-disable-next-line no-unreachable
   const options = {
     hostname: oauth.hostname,
-    path: `${oauth.path}/accounts?api_key=${oauth.api_key}&login=${login}`,
+    path: `${oauth.path}/accounts?api_key=${oauth.apiKey}&login=${login}`,
     method: 'GET',
     timeout: 1000
   };

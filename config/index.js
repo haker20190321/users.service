@@ -21,11 +21,12 @@ module.exports = {
   },
   closeTimeout: 300,
   oauth: {
-    'hostname': 'oauth2.esoft.cloud',
-    'path': '/api/v1',
-    'client_id': 'dev_ecosystem_001',
-    'client_secret': 't715mrk8RF9Q6ZUq',
-    'redirect_uri': '',
-    'api_key': 'YWpQM2JVNGJHQkI3OXVnbnVoQlByY2dXVXNSVGdaaDZrZGpnNDVuTlBuaDZ1ZWZSIDEwLjEyLjEuNzk='
+    hostname: 'oauth2.esoft.cloud',
+    path: '/api/v1',
+    clientId: 'dev_ecosystem_001',
+    clientSecret: 't715mrk8RF9Q6ZUq',
+    redirectUri: '',
+    apiKey: 'YWpQM2JVNGJHQkI3OXVnbnVoQlByY2dXVXNSVGdaaDZrZGpnNDVuTlBuaDZ1ZWZSIDEwLjEyLjEuNzk=',
+    requestTimeout: 6000
   }
 };
