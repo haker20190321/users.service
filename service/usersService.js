@@ -16,15 +16,15 @@ module.exports = {
       // проверить существование аккаунта с таким логином
       const {Op} = Models.Sequelize;
       const {login} = userData;
-      let {id: accountId} = await checkAccount(login, true);
+      let {id} = await checkAccount(login, true);
 
       // если аккаунт существует, то ищем пользователя
       // иначе создаем аккаунт
-      if (accountId) {
+      if (id) {
         const cnt = await Models.User.count({
           where: {
             [Op.or]: [
-              {accountId: {[Op.eq]: accountId}},
+              {id: {[Op.eq]: id}},
               {login: {[Op.eq]: login}}
             ]
           }
@@ -40,12 +40,12 @@ module.exports = {
           throw new Error(`User with login ${userData.login} is exist`);
         }
 
-        accountId = await createAccount(userData);
+        id = await createAccount(userData);
       }
 
       // создаем пользователя
       const user = await Models.User.create({
-        accountId,
+        id,
         ...userData
       });
 

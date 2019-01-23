@@ -9,7 +9,6 @@ chai.should();
 
 const usersFields = [
   'id',
-  'accountId',
   'firstName',
   'lastName',
   'middleName',

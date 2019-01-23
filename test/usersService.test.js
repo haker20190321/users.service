@@ -7,7 +7,6 @@ const {makeUser, sleep} = require('./helper');
 const timeout = 0;
 const usersFields = [
   'id',
-  'accountId',
   'firstName',
   'lastName',
   'middleName',

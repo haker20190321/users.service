@@ -10,11 +10,6 @@ module.exports = {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    accountId: {
-      allowNull: false,
-      type: DataTypes.INTEGER,
-      unique: true
-    },
     login: {
       allowNull: false,
       type: DataTypes.STRING,
@@ -53,7 +48,6 @@ module.exports = {
       queryInterface.addIndex(tableName, {fields: ['deletedAt']}),
       queryInterface.addIndex(tableName, {fields: ['createdAt']}),
       queryInterface.addIndex(tableName, {fields: ['isActive']}),
-      queryInterface.addIndex(tableName, {fields: ['accountId']}),
       queryInterface.addIndex(tableName, {fields: ['login']})
     ])),
   down: (queryInterface) => queryInterface.dropTable(tableName)
