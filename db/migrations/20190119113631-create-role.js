@@ -1,6 +1,6 @@
 'use strict';
 
-const tableName = 'Roles';
+const tableName = 'roles';
 
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(tableName, {

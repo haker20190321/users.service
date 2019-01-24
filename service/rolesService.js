@@ -155,7 +155,57 @@ module.exports = {
 
     return cnt > 0;
   },
+  /**
+   * Set rights for role
+   * @param roleId
+   * @param rightsIds
+   * @param Models
+   * @return {Promise<(Object|any)[]>}
+   */
+  setRoleRights: async(roleId, rightsIds, {Models}) => {
+    await Models.RoleRight.destroy({
+      where: {roleId: {[Models.Sequelize.Op.eq]: roleId}}
+    });
 
+    const rolesRights = await Models.RoleRight.bulkCreate(rightsIds.map((rightId) => {
+      return {roleId, rightId};
+    }), {returning: true});
+
+    return rolesRights.map((roleRight) => roleRight.get({plain: true}));
+  },
+  /**
+   * Add right for role
+   * @param roleId
+   * @param rightId
+   * @param Models
+   * @return {Promise<*>}
+   */
+  addRoleRight: async(roleId, rightId, {Models}) => {
+    const roleRight = await Models.RoleRight.create({roleId, rightId});
+
+    return roleRight.get({plain: true});
+  },
+  /**
+   * Disable right for role
+   * @param roleId
+   * @param rightId
+   * @param Models
+   * @return {Promise<boolean>}
+   */
+  deleteRoleRight: async(roleId, rightId, {Models}) => {
+    const cnt = await Models.RoleRight.destroy({
+      where: {
+        roleId: {
+          [Models.Sequelize.Op.eq]: roleId
+        },
+        rightId: {
+          [Models.Sequelize.Op.eq]: rightId
+        }
+      }
+    });
+
+    return cnt > 0;
+  },
   /**
    * Set roles for user
    * @param userId
@@ -170,9 +220,9 @@ module.exports = {
 
     const userRoles = await Models.UserRole.bulkCreate(rolesIds.map((roleId) => {
       return {userId, roleId};
-    }));
+    }), {returning: true});
 
-    return userRoles.map((role) => role.get({plain: true}));
+    return userRoles.map((userRole) => userRole.get({plain: true}));
   },
   /**
    * Add role for user
