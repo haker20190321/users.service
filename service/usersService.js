@@ -135,13 +135,21 @@ module.exports = {
    */
   deleteUser: async(userId, {Models, logger}) => {
     logger.debug('userService.deleteUser: init');
+    logger.debug('userService.deleteUser: find user');
+    const user = await Models.User.findByPk(userId);
+
+    logger.debug('userService.deleteUser: find user success');
+
+    if (!user) {
+      logger.debug('userService.deleteUser: user is missing');
+      throw new Error(`user with id ${userId} is missing`);
+    }
+
     logger.debug('userService.deleteUser: destroy user');
-    const cnt = await Models.User.destroy({
-      where: {id: {[Models.Sequelize.Op.eq]: userId}}
-    });
+    await user.destroy();
     logger.debug('userService.deleteUser: destroy user success');
 
-    return cnt > 0;
+    return true;
   },
   /**
    * Search users
