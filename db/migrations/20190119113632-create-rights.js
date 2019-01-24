@@ -1,6 +1,6 @@
 'use strict';
 
-const tableName = 'RoleRights';
+const tableName = 'rights';
 
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(tableName, {
@@ -10,18 +10,18 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    roleId: {
+    title: {
       allowNull: false,
-      type: Sequelize.INTEGER
+      type: Sequelize.STRING
     },
-    rightId: {
+    name: {
       allowNull: false,
-      type: Sequelize.INTEGER
+      type: Sequelize.STRING
     }
   })
     .then(() => Promise.all([
-      queryInterface.addIndex(tableName, {fields: ['roleId']}),
-      queryInterface.addIndex(tableName, {fields: ['rightId']})
+      queryInterface.addIndex(tableName, {fields: ['name']}),
+      queryInterface.addIndex(tableName, {fields: ['title']})
     ])),
   down: (queryInterface) => queryInterface.dropTable(tableName)
 };

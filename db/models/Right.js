@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     timestamps: false,
     paranoid: false,
-    tableName: 'Rights'
+    tableName: 'rights'
   });
   Rights.associate = function() {
     // associations can be defined here
