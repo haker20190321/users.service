@@ -33,7 +33,8 @@ module.exports = {
               {id: {[Op.eq]: id}},
               {login: {[Op.eq]: login}}
             ]
-          }
+          },
+          paranoid: false
         });
         logger.debug('userService.createUser: Check user by id and login success');
         if (cnt) {
@@ -43,7 +44,8 @@ module.exports = {
         logger.debug('userService.createUser: Account missing branch');
 
         const cnt = await Models.User.count({
-          where: {login: {[Op.eq]: login}}
+          where: {login: {[Op.eq]: login}},
+          paranoid: false
         });
         logger.debug('userService.createUser: Check user by id success');
         if (cnt) {
