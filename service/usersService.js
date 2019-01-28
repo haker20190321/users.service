@@ -58,8 +58,8 @@ module.exports = {
       // создаем пользователя
       logger.debug('userService.createUser: createUser');
       const user = await Models.User.create({
-        id,
-        ...userData
+        ...userData,
+        id
       });
       logger.debug('userService.createUser: createUser success');
 
