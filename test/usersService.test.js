@@ -12,10 +12,7 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login',
-  'createdAt',
-  'updatedAt',
-  'deletedAt'
+  'login'
 ];
 let userId = null,
   accountId = null;
@@ -147,9 +144,12 @@ describe('usersService tests', function () {
     });
 
     it('should delete by id', async function () {
-      const res = await User.deleteUser(userId, {Models, logger});
-
-      assert.isFalse(res);
+      try {
+        const res = await User.deleteUser(userId, {Models, logger});
+        assert.isUndefined(res);
+      } catch (e) {
+        assert.instanceOf(e, Error)
+      }
 
       await sleep(timeout);
     });

@@ -58,12 +58,12 @@ module.exports = {
       // создаем пользователя
       logger.debug('userService.createUser: createUser');
       const user = await Models.User.create({
-        id,
-        ...userData
+        ...userData,
+        id
       });
       logger.debug('userService.createUser: createUser success');
 
-      return user.get();
+      return user.get('woTs');
     } catch(error) {
       logger.debug('userService.createUser: error catch');
 
@@ -93,14 +93,12 @@ module.exports = {
 
     logger.debug('userService.updateUser: update user');
     await user.update(userData, {
-      fields: ['firstName', 'lastName', 'middleName']
+      fields: ['firstName', 'lastName', 'middleName', 'isActive']
     });
 
     logger.debug('userService.updateUser: update user success');
 
-    return user.get({
-      plain: true
-    });
+    return user.get('woTs');
   },
   /**
    * Get user by user id
@@ -122,9 +120,7 @@ module.exports = {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    return user.get({
-      plain: true
-    });
+    return user.get('woTs');
   },
   /**
    * Delete user by user id
@@ -135,13 +131,21 @@ module.exports = {
    */
   deleteUser: async(userId, {Models, logger}) => {
     logger.debug('userService.deleteUser: init');
+    logger.debug('userService.deleteUser: find user');
+    const user = await Models.User.findByPk(userId);
+
+    logger.debug('userService.deleteUser: find user success');
+
+    if (!user) {
+      logger.debug('userService.deleteUser: user is missing');
+      throw new Error(`user with id ${userId} is missing`);
+    }
+
     logger.debug('userService.deleteUser: destroy user');
-    const cnt = await Models.User.destroy({
-      where: {id: {[Models.Sequelize.Op.eq]: userId}}
-    });
+    await user.destroy();
     logger.debug('userService.deleteUser: destroy user success');
 
-    return cnt > 0;
+    return true;
   },
   /**
    * Search users
@@ -161,6 +165,6 @@ module.exports = {
     });
     logger.debug('userService.searchUsers: search users success');
 
-    return users.map((item) => item.get({plain: true}));
+    return users.map((item) => item.get('woTs'));
   }
 };
