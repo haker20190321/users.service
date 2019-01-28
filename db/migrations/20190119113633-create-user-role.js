@@ -4,12 +4,6 @@ const tableName = 'usersRoles';
 
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(tableName, {
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: Sequelize.INTEGER
-    },
     userId: {
       allowNull: false,
       type: Sequelize.INTEGER
@@ -22,6 +16,7 @@ module.exports = {
     .then(() => Promise.all([
       queryInterface.addIndex(tableName, {fields: ['userId']}),
       queryInterface.addIndex(tableName, {fields: ['roleId']}),
+      queryInterface.addConstraint(tableName, ['userId', 'roleId'], {type: 'unique'}),
       queryInterface.addConstraint(tableName, ['userId'], {
         type: 'foreign key',
         references: {

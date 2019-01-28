@@ -7,6 +7,11 @@ const logger = loggerFunc('Test');
 const randomstring = require('randomstring');
 const {makeUser} = require('./helper');
 
+const rightFields = ['id', 'title', 'name'];
+const roleFields = ['id', 'title'];
+const userRoleFields = ['userId', 'roleId'];
+const roleRightFields = ['rightId', 'roleId'];
+
 describe('rolesController test', function () {
   describe('Normal behavior', function () {
     let rightId, roleId, user;
@@ -23,7 +28,7 @@ describe('rolesController test', function () {
       const res = await rolesService.createRight(right, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'title', 'name']);
+      assert.hasAllKeys(res, rightFields);
       assert.isNumber(res.id);
       assert.isTrue(res.id > 0);
       for (const key in right) {
@@ -36,7 +41,7 @@ describe('rolesController test', function () {
       const res = await rolesService.getRight(rightId, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'title', 'name']);
+      assert.hasAllKeys(res, rightFields);
       assert.strictEqual(rightId, res.id);
     });
 
@@ -58,7 +63,7 @@ describe('rolesController test', function () {
       const res = await rolesService.updateRight(rightId, {title: rightTitle}, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'title', 'name']);
+      assert.hasAllKeys(res, rightFields);
       assert.strictEqual(rightTitle, res.title);
       assert.strictEqual(rightId, res.id);
     });
@@ -68,7 +73,7 @@ describe('rolesController test', function () {
       const res = await rolesService.createRole(roleData, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'title']);
+      assert.hasAllKeys(res, roleFields);
 
       roleId = res.id;
     });
@@ -77,7 +82,7 @@ describe('rolesController test', function () {
       const res = await rolesService.getRole(roleId, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'title']);
+      assert.hasAllKeys(res, roleFields);
       assert.strictEqual(roleId, res.id);
     });
 
@@ -99,7 +104,8 @@ describe('rolesController test', function () {
       const res = await rolesService.updateRole(roleId, {title}, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'title']);
+
+      assert.hasAllKeys(res, roleFields);
       assert.strictEqual(title, res.title);
       assert.strictEqual(roleId, res.id);
     });
@@ -110,7 +116,7 @@ describe('rolesController test', function () {
       assert.isArray(res);
       assert.isTrue(res.length > 0);
       res.forEach((userRole) => {
-        assert.hasAllKeys(userRole, ['id', 'userId', 'roleId']);
+        assert.hasAllKeys(userRole, userRoleFields);
         assert.equal(userRole.userId, user.id);
         assert.equal(userRole.roleId, roleId)
       })
@@ -127,7 +133,7 @@ describe('rolesController test', function () {
       const res = await rolesService.addUserRole(user.id, roleId, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'userId', 'roleId']);
+      assert.hasAllKeys(res, userRoleFields);
       assert.equal(res.userId,  user.id);
       assert.equal(res.roleId, roleId);
     });
@@ -138,7 +144,6 @@ describe('rolesController test', function () {
       assert.isArray(res);
       assert.isTrue(res.length === 1);
       res.forEach(roleRight => {
-        assert.isNumber(roleRight.id);
         assert.equal(roleRight.roleId, roleId);
         assert.equal(roleRight.rightId, rightId);
       })
@@ -155,7 +160,7 @@ describe('rolesController test', function () {
       const res = await rolesService.addRoleRight(roleId, rightId, {Models});
 
       assert.isObject(res);
-      assert.hasAllKeys(res, ['id', 'rightId', 'roleId']);
+      assert.hasAllKeys(res, roleRightFields);
       assert.equal(res.rightId, rightId);
       assert.equal(res.roleId, roleId);
     });
@@ -181,7 +186,6 @@ describe('rolesController test', function () {
       assert.isBoolean(res);
       assert.isTrue(res);
     });
-
   });
 
   describe('Error behavior', function () {
