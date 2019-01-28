@@ -53,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     paranoid: true,
     tableName: 'users',
     getterMethods: {
+      // with out timestamps
       woTs() {
         return {
           id: this.id,
