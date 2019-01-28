@@ -7,10 +7,10 @@ module.exports = {
     port: 5432,
     replication: {
       read: [
-        {host: 'localhost', username: 'test_user', password: 'test_user'},
-        {host: 'localhost', username: 'test_user', password: 'test_user'}
+        {host: '10.9.3.193', username: 'test_user', password: 'test_password'},
+        {host: '10.9.3.193', username: 'test_user', password: 'test_password'}
       ],
-      write: {host: 'localhost', username: 'test_user', password: 'test_user'}
+      write: {host: '10.9.3.193', username: 'test_user', password: 'test_password'}
     },
     pool: {
       max: 50,
