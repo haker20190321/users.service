@@ -13,10 +13,7 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login',
-  'createdAt',
-  'updatedAt',
-  'deletedAt'
+  'login'
 ];
 let userId = null,
   accountId = null;

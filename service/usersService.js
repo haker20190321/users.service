@@ -63,7 +63,7 @@ module.exports = {
       });
       logger.debug('userService.createUser: createUser success');
 
-      return user.get();
+      return user.get('woTs');
     } catch(error) {
       logger.debug('userService.createUser: error catch');
 
@@ -93,14 +93,12 @@ module.exports = {
 
     logger.debug('userService.updateUser: update user');
     await user.update(userData, {
-      fields: ['firstName', 'lastName', 'middleName']
+      fields: ['firstName', 'lastName', 'middleName', 'isActive']
     });
 
     logger.debug('userService.updateUser: update user success');
 
-    return user.get({
-      plain: true
-    });
+    return user.get('woTs');
   },
   /**
    * Get user by user id
@@ -122,9 +120,7 @@ module.exports = {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    return user.get({
-      plain: true
-    });
+    return user.get('woTs');
   },
   /**
    * Delete user by user id
@@ -169,6 +165,6 @@ module.exports = {
     });
     logger.debug('userService.searchUsers: search users success');
 
-    return users.map((item) => item.get({plain: true}));
+    return users.map((item) => item.get('woTs'));
   }
 };

@@ -51,7 +51,19 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     timestamps: true,
     paranoid: true,
-    tableName: 'users'
+    tableName: 'users',
+    getterMethods: {
+      woTs() {
+        return {
+          id: this.id,
+          login: this.login,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          middleName: this.middleName,
+          isActive: this.isActive
+        };
+      }
+    }
   });
   User.associate = function() {
     // associations can be defined here

@@ -16,10 +16,7 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login',
-  'createdAt',
-  'updatedAt',
-  'deletedAt'
+  'login'
 ];
 
 const {makeUser, sleep} = require('./helper');
