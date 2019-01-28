@@ -4,10 +4,10 @@ module.exports = {
   knex: {
     client: 'pg',
     connection: {
-      host: 'localhost',
+      host: '10.9.3.193',
       port: '5432',
       user: 'test_user',
-      password: 'test_user',
+      password: 'test_password',
       database: 'users'
     },
     pool: {
