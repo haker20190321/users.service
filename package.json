@@ -5,33 +5,41 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha --exit",
-    "coverage": "nyc mocha ./test/*.js --exit",
-    "coverage-html": "nyc --reporter=html mocha ./test/*.js --exit",
-    "lint": "eslint --max-warnings 0 service/ controllers/",
-    "coverage_percents": "nyc check-coverage --lines 80 --functions 80 --branches 80"
+    "test": "mocha ./test/*.test.js --exit",
+    "coverage": "nyc mocha ./test/*.test.js --exit",
+    "coverage-html": "nyc --reporter=html mocha ./test/*.test.js --exit",
+    "lint": "eslint --max-warnings 0 ./",
+    "coverage_percents": "nyc check-coverage --lines 80 --functions 80 --branches 80",
+    "migrate": "node_modules/.bin/sequelize db:migrate",
+    "rollback": "node_modules/.bin/sequelize db:migrate:undo",
+    "status": "node_modules/.bin/sequelize db:migrate:status"
   },
   "author": "kmayer",
   "license": "ISC",
   "dependencies": {
-    "@esoft_private/esoft-service": "^1.0.0",
-    "knex": "^0.16.3",
-    "pg": "^7.7.1"
+    "@esoft_private/esoft-service": "^1.6.6",
+    "pg": "^7.8.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.42.0",
+    "ssha": "^1.0.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "chai": "^4.2.0",
     "chai-http": "^4.2.0",
-    "eslint": "^5.11.1",
+    "eslint": "^5.12.1",
     "eslint-config-defaults": "^9.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
-    "openapi3-generator": "^0.9.1"
+    "randomstring": "^1.1.5",
+    "sequelize-cli": "^5.4.0"
   },
   "nyc": {
     "exclude": [
       "test",
-      "coverage"
+      "coverage",
+      "db",
+      "components"
     ],
     "reporter": [
       "json",

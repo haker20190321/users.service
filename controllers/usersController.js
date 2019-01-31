@@ -4,62 +4,72 @@ const User = require('../service/usersService');
 module.exports = {
   /**
    * Create user
-   *
-   * @param params
-   * @param ext
+   * @param {Object} params
+   * @param {Object} ext
+   * @param {Function} writeError
    * @return {Promise<void>}
    */
-  createUser: async(params, ext) => {
-    const {
-      userData
-    } = params;
-
-    return await User.createUser(userData.value, ext);
+  createUser: async({userData}, ext, writeError) => {
+    try {
+      return await User.createUser(userData.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
   },
   /**
    * Update user
-   * @param request
-   * @param response
+   * @param params
+   * @param {Object} ext
+   * @param {Function} writeError
+   * @return {Promise<void>}
    */
-  updateUser: (request, response) => {
-    const {params} = request.swagger;
-    const userId = params.userId.value;
-    const userData = params.userData.value;
-
+  updateUser: async({userId, userData}, ext, writeError) => {
     try {
-      response.send(User.updateUser(userId, userData));
+      return await User.updateUser(userId.value, userData.value, ext);
     } catch(error) {
-      response.status(404)
-        .send({message: error.message, code: 404});
+      return writeError(error.message);
     }
   },
   /**
    * Get user by id
-   * @param request
-   * @param response
+   * @param {Object} params - parameters
+   * @param {Object} ext - extensions
+   * @param {Function} writeError - error callback
+   * @return {Promise<void>}
    */
-  getUser: (request, response) => {
-    const {params} = request.swagger;
-    const userId = params.userId.value;
-
+  getUser: async({userId}, ext, writeError) => {
     try {
-      response.send(User.getUser(userId));
+      return await User.getUser(userId.value, ext);
     } catch(error) {
-      response.status(404)
-        .send({message: error.message, code: 404});
+      return writeError(error.message);
     }
   },
   /**
    * Delete user by id
-   * @param request
-   * @param response
+   * @param {Object} params - parameters
+   * @param {Object} ext - extensions
+   * @param {Function} writeError - error callback
+   * @return {Promise<void>}
    */
-  deleteUser: (request, response) => {
-    // TODO implement
-    response.status(200);
+  deleteUser: async({userId}, ext, writeError) => {
+    try {
+      return await User.deleteUser(userId.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
   },
-  searchUsers: (request, response) => {
-    // TODO implement
-    response.status(200);
+  /**
+   * Search users
+   * @param {Object} params
+   * @param {Object} ext
+   * @param {Function} writeError
+   * @return {Promise<void>}
+   */
+  searchUsers: async({searchParams}, ext, writeError) => {
+    try {
+      return await User.searchUsers(searchParams.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
   }
 };

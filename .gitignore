@@ -9,8 +9,4 @@ package-lock.json
 .nyc_output
 coverage
 
-# database
-db-data
-
-# specifications symlink
-specifications
+.ssh

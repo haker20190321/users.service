@@ -1,9 +1,20 @@
-## I am a dummy user service.
-But this does not mean that my users are too stupid.
+## I am a dummy service of Users.
+
+##### Before run
+- Change configs in `config/index.js` and `config/sequelize.js`, or
+- For local using start database on docker-compose `docker-compose up -d`
 
 ##### Install dependencies
 ```bash
 npm install
+```
+##### Run migrations
+```bash
+npm run migrate
+```
+##### Rollback migrations
+```bash
+npm run rollback
 ```
 ##### Run tests
 ```bash
@@ -17,5 +28,9 @@ npm run coverage
 ````bash
 npm start
 ````
+##### Show api documents in browser `http://localhost:8085/docs/ui`
 
-##### Show api documents in browser `http://localhost:8085/docs`
+---
+#### TODO:
+For build images change package `"@esoft_private/esoft-service": "git+ssh://git@git.etagi.com:kmayer/esoft-service.git#v1.0.0",`,
+ and add `.ssh` dir to project root.
