@@ -1,69 +1,63 @@
 'use strict';
-const checkAccount = require('../components/auth/checkAccount');
-const createAccount = require('../components/auth/createAccount');
 
 module.exports = {
   /**
    * Create user
-   *
    * @param {Object} userData
-   * @param {Object} db
    * @param {Object} Models
-   * @return {Promise<void>}
+   * @param {Object} OAuth
+   * @param {Object} logger
+   * @return {Promise<*>}
    */
-  createUser: async(userData, {Models, logger}) => {
+  createUser: async(userData, {Models, OAuth, logger}) => {
     logger.debug('userService.createUser: init');
     // проверить существование аккаунта с таким логином
     const {Op} = Models.Sequelize;
     const {login} = userData;
+
     try {
-      logger.debug('userService.createUser: checkAccount - start');
+      logger.debug('userService.createUser: check login in service - start');
 
-      let {id} = await checkAccount(login, true);
+      const cnt = await Models.User.count({
+        where: {
+          login: {[Op.eq]: login}
+        },
+        paranoid: false
+      });
 
-      logger.debug('userService.createUser: checkAccount - success');
-      // если аккаунт существует, то ищем пользователя
-      // иначе создаем аккаунт
-      if (id) {
-        logger.debug('userService.createUser: Account exist branch');
+      logger.debug('userService.createUser: check login in service - success');
 
-        const cnt = await Models.User.count({
-          where: {
-            [Op.or]: [
-              {id: {[Op.eq]: id}},
-              {login: {[Op.eq]: login}}
-            ]
-          },
-          paranoid: false
-        });
-        logger.debug('userService.createUser: Check user by id and login success');
-        if (cnt) {
-          throw new Error(`User with login ${userData.login} is exist`);
-        }
-      } else {
-        logger.debug('userService.createUser: Account missing branch');
+      if (cnt) {
+        logger.debug(`userService.createUser: check login in service - ` +
+          `login '${userData.login}' is exist`);
 
-        const cnt = await Models.User.count({
-          where: {login: {[Op.eq]: login}},
-          paranoid: false
-        });
-        logger.debug('userService.createUser: Check user by id success');
-        if (cnt) {
-          throw new Error(`User with login ${userData.login} is exist`);
-        }
-
-        logger.debug('userService.createUser: createAccount');
-        id = await createAccount(userData);
-        logger.debug('userService.createUser: createAccount success');
+        throw new Error(`User with login ${userData.login} is exist in service`);
       }
 
-      // создаем пользователя
-      logger.debug('userService.createUser: createUser');
+      logger.debug(`userService.createUser: check login in ldap - start`);
+
+      const exist = await OAuth.check(login, false);
+
+      logger.debug(`userService.createUser: check login in ldap - success`);
+
+      if (exist) {
+        throw new Error(`User with login ${userData.login} is exist in ldap`);
+      }
+
+      logger.debug('userService.createUser: create account in ldap - start');
+
+      const id = await OAuth.create(userData);
+
+      logger.debug('userService.createUser: create account in ldap - success');
+
+      logger.debug('userService.createUser: create user in service - start');
+
       const user = await Models.User.create({
         ...userData,
         id
       });
-      logger.debug('userService.createUser: createUser success');
+
+      logger.debug('userService.createUser: create user in service - success');
 
       return user.get('woTs');
     } catch(error) {
@@ -115,6 +109,7 @@ module.exports = {
     logger.debug('userService.getUser: find user');
 
     const user = await Models.User.findByPk(userId);
+
     logger.debug('userService.getUser: find user success');
 
     if (!user) {
@@ -165,6 +160,7 @@ module.exports = {
       where,
       order
     });
+
     logger.debug('userService.searchUsers: search users success');
 
     return users.map((item) => item.get('woTs'));

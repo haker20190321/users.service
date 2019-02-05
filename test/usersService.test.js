@@ -1,9 +1,9 @@
 const assert = require('chai').assert;
 const User = require('../service/usersService');
-const {knex: connects} = require('../config');
 const Models = require('../db/models');
 const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
 const logger = loggerFunc('Test');
+const {AuthSuccess, AuthExist, AuthReject} = require('./mockOAuth');
 
 const {makeUser, sleep} = require('./helper');
 const timeout = 0;
@@ -15,32 +15,44 @@ const usersFields = [
   'isActive',
   'login'
 ];
-let userId = null,
-  accountId = null;
+let userId = null;
 
 describe('usersService tests', function () {
   describe('Normal behavior', function () {
     const userData = makeUser();
 
     it('should create', async function () {
-      const res = await User.createUser(userData, {Models, logger});
+      const res = await User.createUser(userData, {Models, logger, OAuth: new AuthSuccess()});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
 
       userId = res.id;
-      accountId = res.accountId;
 
       await sleep(timeout);
     });
 
-    it('should create exist login', async function () {
+    it('should create exist login in service', async function () {
       try {
-        const res = await User.createUser(userData, {Models, logger});
+        const res = await User.createUser(userData, {Models, logger,OAuth: new AuthExist()});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
-        assert.equal(e.message, `CreateUser: User with login ${userData.login} is exist`);
+        assert.equal(e.message, `CreateUser: User with login ${userData.login} is exist in service`);
+      }
+
+      await sleep(timeout);
+    });
+
+
+    it('should create exist login in ldap', async function () {
+      const userData = makeUser();
+      try {
+        const res = await User.createUser(userData, {Models, logger,OAuth: new AuthExist()});
+        assert.isUndefined(res);
+      } catch (e) {
+        assert.instanceOf(e, Error);
+        assert.equal(e.message, `CreateUser: User with login ${userData.login} is exist in ldap`);
       }
 
       await sleep(timeout);
@@ -100,7 +112,7 @@ describe('usersService tests', function () {
       userData.lastName = null;
 
       try {
-        const res = await User.createUser(userData, {Models, logger});
+        const res = await User.createUser(userData, {Models, logger, OAuth: new AuthReject()});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);

@@ -20,8 +20,10 @@ module.exports = (sequelize, DataTypes) => {
     paranoid: false,
     tableName: 'rolesRights'
   });
+
   RoleRight.associate = function() {
     // associations can be defined here
   };
+
   return RoleRight;
 };
