@@ -6,18 +6,18 @@ const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
 const logger = loggerFunc('Test');
 const randomstring = require('randomstring');
 const {makeUser} = require('./helper');
-
+const {AuthSuccess} = require('./mockOAuth');
 const rightFields = ['id', 'title', 'name'];
 const roleFields = ['id', 'title'];
 const userRoleFields = ['userId', 'roleId'];
 const roleRightFields = ['rightId', 'roleId'];
 
-describe('rolesController test', function () {
+describe('rolesService test', function () {
   describe('Normal behavior', function () {
     let rightId, roleId, user;
 
     it('create user for test', async function () {
-      user = await createUser(makeUser(), {Models, logger});
+      user = await createUser(makeUser(), {Models, logger, OAuth: new AuthSuccess()});
     });
 
     it('should createRight', async function () {

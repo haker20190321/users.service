@@ -1,6 +1,8 @@
 const assert = require('chai').assert;
-const checkAccount = require('../components/auth/checkAccount');
-const createAccount = require('../components/auth/createAccount');
+
+const OAuth = require('../components/oauth');
+const conf = require('../config').oauth;
+const oauth = new OAuth(conf);
 
 const {sleep, makeUser} = require('./helper');
 const timeout = 500;
@@ -10,7 +12,7 @@ const userData = makeUser();
 describe('Auth components test', function () {
   describe('Normal behavior', function () {
     it('should checkAccount without data', async function () {
-      const exist = await checkAccount(userData.login, false);
+      const exist = await oauth.check(userData.login, false);
 
       assert.isBoolean(exist);
       assert.isFalse(exist);
@@ -19,7 +21,7 @@ describe('Auth components test', function () {
     });
 
     it('should createAccount', async function () {
-      const accountId = await createAccount(userData);
+      const accountId = await oauth.create(userData);
 
       assert.isNumber(accountId);
 
@@ -27,7 +29,7 @@ describe('Auth components test', function () {
     });
 
     it('should checkAccount with data after create', async function () {
-      const exist = await checkAccount(userData.login, true);
+      const exist = await oauth.check(userData.login, true);
       const {
         id,
         login,
@@ -44,7 +46,7 @@ describe('Auth components test', function () {
 
   describe('Error behavior', function () {
     it('should checkAccount without data', async function () {
-      const exist = await checkAccount(undefined, false);
+      const exist = await oauth.check(undefined, false);
 
       assert.isBoolean(exist);
       assert.isFalse(exist);
@@ -54,7 +56,7 @@ describe('Auth components test', function () {
 
     it('should createAccount', async function () {
       try {
-        const accountId = await createAccount(userData);
+        const accountId = await oauth.create(userData);
         assert.isUndefined(accountId);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -65,7 +67,7 @@ describe('Auth components test', function () {
     });
 
     it('should checkAccount with data after create', async function () {
-      const exist = await checkAccount('takogo-accounta-net', true);
+      const exist = await oauth.check('takogo-accounta-net', true);
       const {
         id,
         login,

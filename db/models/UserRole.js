@@ -15,9 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'usersRoles',
     freezeTableName: true
   });
+
+  UserRole.removeAttribute('id');
+
   UserRole.associate = function() {
     // associations can be defined here
   };
-  UserRole.removeAttribute('id');
+
   return UserRole;
 };

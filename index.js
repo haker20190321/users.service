@@ -4,9 +4,11 @@ const Service = require('@esoft_private/esoft-service');
 const path = require('path');
 const {
   knex: {connection},
-  closeTimeout
+  closeTimeout,
+  oauth
 } = require('./config');
 const Models = require('./db/models');
+const OAuth = require('./components/oauth');
 
 const service = new Service({
   specDoc: path.resolve(__dirname, './specifications/users.service.yaml'),
@@ -20,5 +22,6 @@ const service = new Service({
 });
 
 service.use('Models', Models);
+service.use('OAuth', new OAuth(oauth));
 
 service.initialize();
