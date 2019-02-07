@@ -82,5 +82,53 @@ module.exports = {
     await department.destroy();
 
     return true;
+  },
+  createPosition: async(params, {Models}) => {
+    const position = await Models.Position.create(params);
+
+    return position.get({plain: true});
+  },
+  updatePosition: async(positionId, params, {Models}) => {
+    const position = await Models.Position.findByPk(positionId);
+
+    if (!position) {
+      throw new Error(`position with id ${positionId} is missing`);
+    }
+
+    await position.update(params, {
+      fields: ['name', 'departmentId']
+    });
+
+    return position.get({plain: true});
+  },
+  getPosition: async(positionId, {Models}) => {
+    const position = await Models.Position.findByPk(positionId);
+
+    if (!position) {
+      throw new Error(`position with id ${positionId} is missing`);
+    }
+
+    return position.get({plain: true});
+  },
+  searchPositions: async({limit, offset, where, order}, {Models}) => {
+    const positions = await Models.Position.findAll({
+      limit,
+      offset,
+      where,
+      order
+    });
+
+    return positions.map((item) => item.get({plain: true}));
+  },
+  deletePosition: async(positionId, {Models}) => {
+    const position = await Models.Position.findByPk(positionId);
+
+    if (!position) {
+      throw new Error(`position with id ${positionId} is missing`);
+    }
+
+    await position.destroy();
+
+    return true;
   }
 };

@@ -17,7 +17,7 @@ describe('rolesService test', function () {
     let rightId, roleId, user;
 
     it('create user for test', async function () {
-      user = await createUser(makeUser(), {Models, logger, OAuth: new AuthSuccess()});
+      user = await createUser(await makeUser(), {Models, logger, OAuth: new AuthSuccess()});
     });
 
     it('should createRight', async function () {

@@ -16,7 +16,8 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login'
+  'login',
+  'positionId'
 ];
 
 const {makeUser, sleep} = require('./helper');
@@ -24,10 +25,15 @@ const timeout = 0;
 const errorLog = console.warn;
 
 describe('usersController test', function () {
-  const userData = makeUser();
   let user = {};
 
   describe('Normal behavior', function () {
+    let userData;
+
+    it('should init', async function() {
+      userData = await makeUser();
+    });
+
     it('should controller has methods', function () {
       assert.hasAllKeys(usersController, [
         'createUser',
@@ -37,7 +43,6 @@ describe('usersController test', function () {
         'searchUsers'
       ]);
     });
-
 
     it('should createUser', async function () {
       user = await usersController.createUser({
@@ -118,8 +123,14 @@ describe('usersController test', function () {
   });
 
   describe('Error behavior', function () {
-    const userData = makeUser();
-    delete userData.login;
+    let userData;
+
+    it('should init', async function() {
+      userData = await makeUser();
+      delete userData.login;
+    });
+
+
     it('should createUser', async function () {
       const user = await usersController.createUser({
         userData: {

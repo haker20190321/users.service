@@ -1,5 +1,6 @@
 const assert = require('chai').assert;
 const User = require('../service/usersService');
+const positionsService = require('../service/positionsService');
 const Models = require('../db/models');
 const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
 const logger = loggerFunc('Test');
@@ -13,13 +14,18 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login'
+  'login',
+  'positionId'
 ];
 let userId = null;
 
 describe('usersService tests', function () {
   describe('Normal behavior', function () {
-    const userData = makeUser();
+    let userData;
+
+    it('should init', async function() {
+      userData = await makeUser();
+    });
 
     it('should create', async function () {
       const res = await User.createUser(userData, {Models, logger, OAuth: new AuthSuccess()});
@@ -34,7 +40,7 @@ describe('usersService tests', function () {
 
     it('should create exist login in service', async function () {
       try {
-        const res = await User.createUser(userData, {Models, logger,OAuth: new AuthExist()});
+        const res = await User.createUser(userData, {Models, logger, OAuth: new AuthExist()});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -46,7 +52,7 @@ describe('usersService tests', function () {
 
 
     it('should create exist login in ldap', async function () {
-      const userData = makeUser();
+      const userData = await makeUser();
       try {
         const res = await User.createUser(userData, {Models, logger,OAuth: new AuthExist()});
         assert.isUndefined(res);
@@ -105,8 +111,8 @@ describe('usersService tests', function () {
     });
   });
 
-  describe('Error behavior', function () {
-    const userData = makeUser();
+  describe('Error behavior', async function () {
+    const userData = await makeUser();
 
     it('should create', async function () {
       userData.lastName = null;
