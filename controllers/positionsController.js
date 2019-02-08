@@ -12,7 +12,7 @@ module.exports = {
   },
   getDepartment: async({departmentId}, ext, writeError) => {
     try {
-      return await positionsService.getDepartment(departmentId, ext);
+      return await positionsService.getDepartment(departmentId.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
