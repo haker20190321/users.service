@@ -40,7 +40,10 @@ describe('usersController test', function () {
         'updateUser',
         'getUser',
         'deleteUser',
-        'searchUsers'
+        'searchUsers',
+        'createUserRelationship',
+        'updateUserRelationships',
+        'deleteUserRelationship'
       ]);
     });
 
@@ -89,6 +92,54 @@ describe('usersController test', function () {
       assert.strictEqual(user.id, res.id);
 
       await sleep(timeout);
+    });
+
+    let secondUser;
+
+    it('should createUserRelationship', async function() {
+      secondUser = await usersController.createUser({
+        userData: {
+          value: await makeUser()
+        }
+      }, {Models, logger, OAuth: new AuthSuccess()}, errorLog);
+
+      const res = await usersController.createUserRelationship({
+        head: user.id,
+        under: secondUser.id,
+      }, {Models}, errorLog);
+
+      assert.isObject(res);
+      assert.equal(res.head, user.id);
+      assert.equal(res.under, secondUser.id)
+    });
+
+    let thirdUser;
+
+    it('should updateUserRelationship', async function() {
+      thirdUser = await usersController.createUser({
+        userData: {
+          value: await makeUser()
+        }
+      }, {Models, logger, OAuth: new AuthSuccess()}, errorLog);
+
+      const [res] = await usersController.updateUserRelationships({
+        params: {under: thirdUser.id},
+        where: {head: user.id, under: secondUser.id}
+      }, {Models}, errorLog);
+
+      assert.isObject(res);
+      assert.equal(res.head, user.id);
+      assert.equal(res.under, thirdUser.id)
+    });
+
+    it('should deleteUserRelationship', async function() {
+      const res = await usersController.deleteUserRelationship({
+        head: user.id,
+        under: thirdUser.id
+      }, {Models}, errorLog);
+
+      assert.isBoolean(res);
+      assert.isTrue(res);
     });
 
     it('should deleteUser', async function () {
@@ -200,6 +251,37 @@ describe('usersController test', function () {
       assert.isUndefined(res);
 
       await sleep(timeout);
+    });
+
+    let secondUser;
+
+    it('should createUserRelationship', async function() {
+        const res = await usersController.createUserRelationship({
+          head: 0,
+          under: 1,
+        }, {Models}, errorLog);
+
+        assert.isUndefined(res);
+    });
+
+    let thirdUser;
+
+    it('should updateUserRelationship', async function() {
+      const res = await usersController.updateUserRelationships({
+        params: {under: 0},
+        where: {badArg: 23}
+      }, {Models}, errorLog);
+
+      assert.isUndefined(res);
+    });
+
+    it('should deleteUserRelationship', async function() {
+      const res = await usersController.deleteUserRelationship({
+        head: 1,
+        under: 0
+      }, {Models}, errorLog);
+
+      assert.isUndefined(res)
     });
   });
 });

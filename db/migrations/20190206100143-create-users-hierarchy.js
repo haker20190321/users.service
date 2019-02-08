@@ -5,9 +5,11 @@ const tableName = 'usersHierarchy';
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(tableName, {
     head: {
+      allowNull: false,
       type: Sequelize.INTEGER
     },
     under: {
+      allowNull: false,
       type: Sequelize.INTEGER
     }
   })
@@ -25,7 +27,7 @@ module.exports = {
       queryInterface.addConstraint(tableName, ['under'], {
         type: 'foreign key',
         references: {
-          table: 'roles',
+          table: 'users',
           field: 'id'
         },
         onDelete: 'cascade',

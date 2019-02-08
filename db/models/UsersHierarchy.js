@@ -13,6 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'usersHierarchy'
   });
 
+  UsersHierarchy.removeAttribute('id');
+
   UsersHierarchy.associate = function() {
     // associations can be defined here
   };

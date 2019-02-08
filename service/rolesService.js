@@ -22,7 +22,7 @@ module.exports = {
     const role = await Models.Role.findByPk(roleId);
 
     if (!role) {
-      throw new Error(`right with id ${roleId} is missing`);
+      throw new Error(`role with id ${roleId} is missing`);
     }
 
     return role.get({plain: true});
@@ -56,7 +56,7 @@ module.exports = {
     const role = await Models.Role.findByPk(roleId);
 
     if (!role) {
-      throw new Error(`right with id ${roleId} is missing`);
+      throw new Error(`role with id ${roleId} is missing`);
     }
 
     await role.update(roleData, {
