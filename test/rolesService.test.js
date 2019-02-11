@@ -124,8 +124,10 @@ describe('rolesService test', function () {
   it('should deleteUserRole', async function () {
     const res = await rolesService.deleteUserRole(user.id, roleId, {Models});
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
+    assert.isObject(res);
+    assert.hasAllKeys(res, userRoleFields);
+    assert.equal(user.id, res.userId);
+    assert.equal(roleId, res.roleId);
   });
 
   it('should addUserRole', async function () {
@@ -151,8 +153,10 @@ describe('rolesService test', function () {
   it('should deleteRoleRight', async function () {
     const res = await rolesService.deleteRoleRight(roleId, rightId, {Models});
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
+    assert.isObject(res);
+    assert.hasAllKeys(res, roleRightFields);
+    assert.equal(roleId, res.roleId);
+    assert.equal(rightId, res.rightId);
   });
 
   it('should addRoleRight', async function () {
@@ -168,8 +172,9 @@ describe('rolesService test', function () {
   it('should deleteRight', async function () {
     const res = await rolesService.deleteRight(rightId, {Models});
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
+    assert.isObject(res);
+    assert.hasAllKeys(res, rightFields);
+    assert.equal(res.id, rightId);
   });
 
   it('should getRight after delete', async function() {
@@ -195,8 +200,9 @@ describe('rolesService test', function () {
   it('should deleteRole', async function () {
     const res = await rolesService.deleteRole(roleId, {Models});
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
+    assert.isObject(res);
+    assert.hasAllKeys(res, roleFields);
+    assert.equal(res.id, roleId);
   });
 
   it('should getRole after delete', async function() {

@@ -23,262 +23,486 @@ const ext = {Models, logger};
 describe('rolesController', function() {
   let user = {}, role = {}, right = {};
 
-  it('create user for test', async function () {
-    user = await createUser(await makeUser(), {Models, logger, OAuth: new AuthSuccess()});
+  describe('Normal behavior', function() {
+
+    it('create user for test', async function () {
+      user = await createUser(await makeUser(), {Models, logger, OAuth: new AuthSuccess()});
+    });
+
+    it('should createRole', async function() {
+      const params = {
+        title: faker.name.jobType()
+      };
+
+      role = await rolesController.createRole({
+        roleData: {
+          value: params
+        }
+      }, ext, errorLog);
+
+      assert.isObject(role);
+      assert.hasAllKeys(role, roleFields);
+    });
+
+    it('should getRole', async function() {
+      const res = await rolesController.getRole({
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, roleFields);
+      assert.equal(role.id, res.id);
+      assert.equal(role.title, res.title);
+    });
+
+    it('should searchRoles', async function() {
+      const params = {
+        limit: 4
+      };
+
+      const res = await rolesController.searchRoles({
+        searchParams: {
+          value: params
+        }
+      }, ext, errorLog);
+
+      assert.isArray(res);
+      assert.isTrue(res.length <= params.limit);
+      res.forEach(item => assert.hasAllKeys(item, roleFields));
+    });
+
+    it('should updateRole', async function() {
+      const title = faker.name.jobType();
+      const res = await rolesController.updateRole({
+        roleId: {
+          value: role.id
+        },
+        roleData: {
+          value: {title}
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, roleFields);
+      assert.equal(res.title, title);
+      assert.equal(res.id, role.id);
+
+      role = res;
+    });
+
+    it('should createRight', async function() {
+      const params = {
+        title: faker.name.jobArea(),
+        name: faker.name.jobType()
+      };
+
+      right = await rolesController.createRight({
+        rightData: {
+          value: params
+        }
+      }, ext, errorLog);
+
+      assert.isObject(right);
+      assert.hasAllKeys(right, rightFields);
+      assert.equal(right.title, params.title);
+      assert.equal(right.name, params.name);
+    });
+
+    it('should getRight', async function() {
+      const res = await rolesController.getRight({
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, rightFields);
+      assert.equal(res.id, right.id);
+      assert.equal(res.title, right.title);
+      assert.equal(res.name, right.name);
+    });
+
+    it('should searchRights', async function() {
+      const params = {
+        limit: 2
+      };
+
+      const res = await rolesController.searchRights({
+        searchParams: {
+          value: params
+        }
+      }, ext, errorLog);
+
+      assert.isArray(res);
+      assert.isTrue(res.length <= params.limit);
+      res.forEach(item => assert.hasAllKeys(item, rightFields));
+    });
+
+    it('should updateRight', async function() {
+      const title = faker.name.jobArea();
+      const res = await rolesController.updateRight({
+        rightId: {
+          value: right.id
+        },
+        rightData: {
+          value: {title}
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, rightFields);
+      assert.equal(res.id, right.id);
+      assert.equal(res.name, right.name);
+      assert.equal(res.title, title);
+
+      right = res;
+    });
+
+    it('should setRoleRights', async function() {
+      const res = await rolesController.setRoleRights({
+        roleId: {
+          value: role.id
+        },
+        rightsIds: {
+          value: [right.id]
+        }
+      }, ext, errorLog);
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+      res.forEach(item => {
+        assert.hasAllKeys(item, roleRightFields);
+        assert.equal(item.roleId, role.id);
+        assert.isTrue([right.id].includes(item.rightId))
+      })
+    });
+
+    it('should deleteRoleRight', async function() {
+      const res = await rolesController.deleteRoleRight({
+        roleId: {
+          value: role.id
+        },
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, roleRightFields);
+      assert.equal(res.roleId, role.id);
+      assert.equal(res.rightId, right.id);
+    });
+
+    it('should addRoleRight', async function() {
+      const res = await rolesController.addRoleRight({
+        roleId: {
+          value: role.id
+        },
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, roleRightFields);
+      assert.equal(res.roleId, role.id);
+      assert.equal(res.rightId, right.id);
+    });
+
+    it('should setUserRoles', async function() {
+      const res = await rolesController.setUserRoles({
+        userId: {
+          value: user.id
+        },
+        rolesIds: {
+          value: [role.id]
+        }
+      }, ext, errorLog);
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+      res.forEach(item => {
+        assert.hasAllKeys(item, userRoleFields);
+        assert.equal(item.userId, user.id);
+        assert.isTrue([role.id].includes(role.id));
+      })
+    });
+
+    it('should deleteUserRole', async function() {
+      const res = await rolesController.deleteUserRole({
+        userId: {
+          value: user.id
+        },
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, userRoleFields);
+      assert.equal(res.userId, user.id);
+      assert.equal(res.roleId, role.id);
+    });
+
+    it('should addUserRole', async function() {
+      const res = await rolesController.addUserRole({
+        userId: {
+          value: user.id
+        },
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, userRoleFields);
+      assert.equal(res.userId, user.id);
+      assert.equal(res.roleId, role.id);
+    });
+
+    it('should deleteRight', async function() {
+      const res = await rolesController.deleteRight({
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, rightFields);
+      assert.equal(res.id, right.id);
+    });
+
+    it('should deleteRole', async function() {
+      const res = await rolesController.deleteRole({
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, roleFields);
+      assert.equal(res.id, role.id)
+    });
+
+    it('delete user for test', async function () {
+      user = await deleteUser(user.id, {Models, logger});
+    });
   });
 
-  it('should createRole', async function() {
-    const params = {
-      title: faker.name.jobType()
-    };
+  describe('Error behavior', function() {
+    it('should createRole', async function() {
+      const params = {
+        title: null
+      };
 
-    role = await rolesController.createRole({
-      roleData: {
-        value: params
-      }
-    }, ext, errorLog);
+      const res = await rolesController.createRole({
+        roleData: {
+          value: params
+        }
+      }, ext, errorLog);
 
-    assert.isObject(role);
-    assert.hasAllKeys(role, roleFields);
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should getRole', async function() {
-    const res = await rolesController.getRole({
-      roleId: {
-        value: role.id
-      }
-    }, ext, errorLog);
+    it('should getRole', async function() {
+      const res = await rolesController.getRole({
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
 
-    assert.isObject(res);
-    assert.hasAllKeys(res, roleFields);
-    assert.equal(role.id, res.id);
-    assert.equal(role.title, res.title);
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should searchRoles', async function() {
-    const params = {
-      limit: 4
-    };
+    it('should searchRoles', async function() {
+      const params = {
+        limit: 4,
+        where: {
+          id: {
+            'badOp': role.id
+          }
+        }
+      };
 
-    const res = await rolesController.searchRoles({
-      searchParams: {
-        value: params
-      }
-    }, ext, errorLog);
+      const res = await rolesController.searchRoles({
+        searchParams: {
+          value: params
+        }
+      }, ext, errorLog);
 
-    assert.isArray(res);
-    assert.isTrue(res.length <= params.limit);
-    res.forEach(item => assert.hasAllKeys(item, roleFields));
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should updateRole', async function() {
-    const title = faker.name.jobType();
-    const res = await rolesController.updateRole({
-      roleId: {
-        value: role.id
-      },
-      roleData: {
-        value: {title}
-      }
-    }, ext, errorLog);
+    it('should updateRole', async function() {
+      const title = null;
+      const res = await rolesController.updateRole({
+        roleId: {
+          value: role.id
+        },
+        roleData: {
+          value: {title}
+        }
+      }, ext, errorLog);
 
-    assert.isObject(res);
-    assert.hasAllKeys(res, roleFields);
-    assert.equal(res.title, title);
-    assert.equal(res.id, role.id);
+      assert.isUndefined(res);
+    });
 
-    role = res;
-  });
+    it('should createRight', async function() {
+      const params = {
+        title: faker.name.jobArea(),
+        name: null
+      };
 
-  it('should createRight', async function() {
-    const params = {
-      title: faker.name.jobArea(),
-      name: faker.name.jobType()
-    };
+      const res = await rolesController.createRight({
+        rightData: {
+          value: params
+        }
+      }, ext, errorLog);
 
-    right = await rolesController.createRight({
-      rightData: {
-        value: params
-      }
-    }, ext, errorLog);
+      assert.isUndefined(res);
+    });
 
-    assert.isObject(right);
-    assert.hasAllKeys(right, rightFields);
-    assert.equal(right.title, params.title);
-    assert.equal(right.name, params.name);
-  });
+    it('should getRight', async function() {
+      const res = await rolesController.getRight({
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
 
-  it('should getRight', async function() {
-    const res = await rolesController.getRight({
-      rightId: {
-        value: right.id
-      }
-    }, ext, errorLog);
+      assert.isUndefined(res);
+    });
 
-    assert.isObject(res);
-    assert.hasAllKeys(res, rightFields);
-    assert.equal(res.id, right.id);
-    assert.equal(res.title, right.title);
-    assert.equal(res.name, right.name);
-  });
+    it('should searchRights', async function() {
+      const params = {
+        limit: 2,
+        where: {
+          id: {
+            'badOp': role.id
+          }
+        }
+      };
 
-  it('should searchRights', async function() {
-    const params = {
-      limit: 2
-    };
+      const res = await rolesController.searchRights({
+        searchParams: {
+          value: params
+        }
+      }, ext, errorLog);
 
-    const res = await rolesController.searchRights({
-      searchParams: {
-        value: params
-      }
-    }, ext, errorLog);
+      assert.isUndefined(res);
+    });
 
-    assert.isArray(res);
-    assert.isTrue(res.length <= params.limit);
-    res.forEach(item => assert.hasAllKeys(item, rightFields));
-  });
+    it('should updateRight', async function() {
+      const title = null;
+      const res = await rolesController.updateRight({
+        rightId: {
+          value: right.id
+        },
+        rightData: {
+          value: {title}
+        }
+      }, ext, errorLog);
 
-  it('should updateRight', async function() {
-    const title = faker.name.jobArea();
-    const res = await rolesController.updateRight({
-      rightId: {
-        value: right.id
-      },
-      rightData: {
-        value: {title}
-      }
-    }, ext, errorLog);
+      assert.isUndefined(res);
+    });
 
-    assert.isObject(res);
-    assert.hasAllKeys(res, rightFields);
-    assert.equal(res.id, right.id);
-    assert.equal(res.name, right.name);
-    assert.equal(res.title, title);
+    it('should setRoleRights', async function() {
+      const res = await rolesController.setRoleRights({
+        roleId: {
+          value: null
+        },
+        rightsIds: {
+          value: [right.id]
+        }
+      }, ext, errorLog);
 
-    right = res;
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should setRoleRights', async function() {
-    const res = await rolesController.setRoleRights({
-      roleId: {
-        value: role.id
-      },
-      rightsIds: {
-        value: [right.id]
-      }
-    }, ext, errorLog);
+    it('should deleteRoleRight', async function() {
+      const res = await rolesController.deleteRoleRight({
+        roleId: {
+          value: role.id
+        },
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
 
-    assert.isArray(res);
-    assert.isNotEmpty(res);
-    res.forEach(item => {
-      assert.hasAllKeys(item, roleRightFields);
-      assert.equal(item.roleId, role.id);
-      assert.isTrue([right.id].includes(item.rightId))
-    })
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should deleteRoleRight', async function() {
-    const res = await rolesController.deleteRoleRight({
-      roleId: {
-        value: role.id
-      },
-      rightId: {
-        value: right.id
-      }
-    }, ext, errorLog);
+    it('should addRoleRight', async function() {
+      const res = await rolesController.addRoleRight({
+        roleId: {
+          value: role.id
+        },
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should addRoleRight', async function() {
-    const res = await rolesController.addRoleRight({
-      roleId: {
-        value: role.id
-      },
-      rightId: {
-        value: right.id
-      }
-    }, ext, errorLog);
+    it('should setUserRoles', async function() {
+      const res = await rolesController.setUserRoles({
+        userId: {
+          value: user.id
+        },
+        rolesIds: {
+          value: [role.id]
+        }
+      }, ext, errorLog);
 
-    assert.isObject(res);
-    assert.hasAllKeys(res, roleRightFields);
-    assert.equal(res.roleId, role.id);
-    assert.equal(res.rightId, right.id);
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should setUserRoles', async function() {
-    const res = await rolesController.setUserRoles({
-      userId: {
-        value: user.id
-      },
-      rolesIds: {
-        value: [role.id]
-      }
-    }, ext, errorLog);
+    it('should deleteUserRole', async function() {
+      const res = await rolesController.deleteUserRole({
+        userId: {
+          value: user.id
+        },
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
 
-    assert.isArray(res);
-    assert.isNotEmpty(res);
-    res.forEach(item => {
-      assert.hasAllKeys(item, userRoleFields);
-      assert.equal(item.userId, user.id);
-      assert.isTrue([role.id].includes(role.id));
-    })
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should deleteUserRole', async function() {
-    const res = await rolesController.deleteUserRole({
-      userId: {
-        value: user.id
-      },
-      roleId: {
-        value: role.id
-      }
-    }, ext, errorLog);
+    it('should addUserRole', async function() {
+      const res = await rolesController.addUserRole({
+        userId: {
+          value: user.id
+        },
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should addUserRole', async function() {
-    const res = await rolesController.addUserRole({
-      userId: {
-        value: user.id
-      },
-      roleId: {
-        value: role.id
-      }
-    }, ext, errorLog);
+    it('should deleteRight', async function() {
+      const res = await rolesController.deleteRight({
+        rightId: {
+          value: right.id
+        }
+      }, ext, errorLog);
 
-    assert.isObject(res);
-    assert.hasAllKeys(res, userRoleFields);
-    assert.equal(res.userId, user.id);
-    assert.equal(res.roleId, role.id);
-  });
+      assert.isUndefined(res);
+    });
 
-  it('should deleteRight', async function() {
-    const res = await rolesController.deleteRight({
-      rightId: {
-        value: right.id
-      }
-    }, ext, errorLog);
+    it('should deleteRole', async function() {
+      const res = await rolesController.deleteRole({
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
-  });
-
-  it('should deleteRole', async function() {
-    const res = await rolesController.deleteRole({
-      roleId: {
-        value: role.id
-      }
-    }, ext, errorLog);
-
-    assert.isBoolean(res);
-    assert.isTrue(res);
-  });
-
-  it('delete user for test', async function () {
-    user = await deleteUser(user.id, {Models, logger});
+      assert.isUndefined(res);
+    });
   });
 });

@@ -72,11 +72,15 @@ module.exports = {
    * @return {Promise<*>}
    */
   deleteRole: async(roleId, {Models}) => {
-    const cnt = await Models.Role.destroy({
-      where: {id: {[Models.Sequelize.Op.eq]: roleId}}
-    });
+    const role = await Models.Role.findByPk(roleId);
 
-    return cnt > 0;
+    if (!role) {
+      throw new Error(`role with id ${roleId} is missing`);
+    }
+
+    await role.destroy();
+
+    return role.get({plain: true});
   },
   /**
    * Create right
@@ -149,11 +153,15 @@ module.exports = {
    * @return {Promise<*>}
    */
   deleteRight: async(rightId, {Models}) => {
-    const cnt = await Models.Right.destroy({
-      where: {id: {[Models.Sequelize.Op.eq]: rightId}}
-    });
+    const right = await Models.Right.findByPk(rightId);
 
-    return cnt > 0;
+    if (!right) {
+      throw new Error(`right with id ${rightId} is missing`);
+    }
+
+    await right.destroy();
+
+    return right.get({plain: true});
   },
   /**
    * Set rights for role
@@ -193,18 +201,23 @@ module.exports = {
    * @return {Promise<boolean>}
    */
   deleteRoleRight: async(roleId, rightId, {Models}) => {
-    const cnt = await Models.RoleRight.destroy({
-      where: {
-        roleId: {
-          [Models.Sequelize.Op.eq]: roleId
-        },
-        rightId: {
-          [Models.Sequelize.Op.eq]: rightId
-        }
+    const where = {
+      roleId: {
+        [Models.Sequelize.Op.eq]: roleId
+      },
+      rightId: {
+        [Models.Sequelize.Op.eq]: rightId
       }
-    });
+    };
+    const roleRight = await Models.RoleRight.findOne({where});
 
-    return cnt > 0;
+    if (!roleRight) {
+      throw new Error(`pair with roleId = ${roleId}, rightId = ${rightId} is missing`);
+    }
+
+    await Models.RoleRight.destroy({where});
+
+    return roleRight.get({plain: true});
   },
   /**
    * Set roles for user
@@ -244,17 +257,23 @@ module.exports = {
    * @return {Promise<*>}
    */
   deleteUserRole: async(userId, roleId, {Models}) => {
-    const cnt = await Models.UserRole.destroy({
-      where: {
-        userId: {
-          [Models.Sequelize.Op.eq]: userId
-        },
-        roleId: {
-          [Models.Sequelize.Op.eq]: roleId
-        }
+    const where = {
+      userId: {
+        [Models.Sequelize.Op.eq]: userId
+      },
+      roleId: {
+        [Models.Sequelize.Op.eq]: roleId
       }
-    });
+    };
 
-    return cnt > 0;
+    const userRole = await Models.UserRole.findOne({where});
+
+    if (!userRole) {
+      throw new Error(`pair with userId = ${userId}, roleId = ${roleId} is missing`);
+    }
+
+    await Models.UserRole.destroy({where});
+
+    return userRole.get({plain: true});
   }
 };
