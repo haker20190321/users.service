@@ -155,8 +155,9 @@ describe('positionController', function() {
         }
       }, ext, errorLog);
 
-      assert.isBoolean(res);
-      assert.isTrue(res);
+      assert.isObject(res);
+      assert.hasAllKeys(res, positionFields);
+      assert.equal(res.id, position.id);
     });
 
     it('should deleteDepartment', async function() {
@@ -166,8 +167,9 @@ describe('positionController', function() {
         }
       }, ext, errorLog);
 
-      assert.isBoolean(res);
-      assert.isTrue(res);
+      assert.isObject(res);
+      assert.hasAllKeys(res, departmentFields);
+      assert.equal(res.id, department.id);
     });
   });
 

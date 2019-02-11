@@ -81,7 +81,7 @@ module.exports = {
 
     await department.destroy();
 
-    return true;
+    return department.get({plain: true});
   },
   createPosition: async(params, {Models}) => {
     const position = await Models.Position.create(params);
@@ -129,6 +129,6 @@ module.exports = {
 
     await position.destroy();
 
-    return true;
+    return position.get({plain: true});
   }
 };

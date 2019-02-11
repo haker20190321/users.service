@@ -123,8 +123,9 @@ describe('positionsService test', function() {
   it('should deletePosition',async function() {
     const res = await positionsService.deletePosition(position.id, {Models});
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
+    assert.isObject(res);
+    assert.hasAllKeys(res, positionFields);
+    assert.equal(res.id, position.id);
   });
 
   it('should getPosition after delete', async function() {
@@ -160,8 +161,9 @@ describe('positionsService test', function() {
   it('should deleteDepartment', async function() {
     const res = await positionsService.deleteDepartment(department.id, {Models});
 
-    assert.isBoolean(res);
-    assert.isTrue(res);
+    assert.isObject(res);
+    assert.hasAllKeys(res, departmentFields);
+    assert.equal(res.id, department.id);
   });
 
   it('should getDepartment after delete', async function() {
