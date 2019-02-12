@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     middleName: {
       type: DataTypes.STRING
     },
+    positionId: {
+      type: DataTypes.INTEGER
+    },
     isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -61,7 +64,8 @@ module.exports = (sequelize, DataTypes) => {
           firstName: this.firstName,
           lastName: this.lastName,
           middleName: this.middleName,
-          isActive: this.isActive
+          isActive: this.isActive,
+          positionId: this.positionId
         };
       }
     }

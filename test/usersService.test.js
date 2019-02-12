@@ -1,5 +1,6 @@
 const assert = require('chai').assert;
 const User = require('../service/usersService');
+const positionsService = require('../service/positionsService');
 const Models = require('../db/models');
 const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
 const logger = loggerFunc('Test');
@@ -13,13 +14,18 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login'
+  'login',
+  'positionId'
 ];
 let userId = null;
 
 describe('usersService tests', function () {
   describe('Normal behavior', function () {
-    const userData = makeUser();
+    let userData;
+
+    it('should init', async function() {
+      userData = await makeUser();
+    });
 
     it('should create', async function () {
       const res = await User.createUser(userData, {Models, logger, OAuth: new AuthSuccess()});
@@ -34,7 +40,7 @@ describe('usersService tests', function () {
 
     it('should create exist login in service', async function () {
       try {
-        const res = await User.createUser(userData, {Models, logger,OAuth: new AuthExist()});
+        const res = await User.createUser(userData, {Models, logger, OAuth: new AuthExist()});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -46,7 +52,7 @@ describe('usersService tests', function () {
 
 
     it('should create exist login in ldap', async function () {
-      const userData = makeUser();
+      const userData = await makeUser();
       try {
         const res = await User.createUser(userData, {Models, logger,OAuth: new AuthExist()});
         assert.isUndefined(res);
@@ -95,6 +101,48 @@ describe('usersService tests', function () {
       await sleep(timeout);
     });
 
+    let relationship, secondUser;
+
+    it('should create relationship', async function() {
+      secondUser = await User.createUser(await makeUser(), {Models, logger, OAuth: new AuthSuccess()});
+      relationship = await User.createUserRelationship(userId, secondUser.id, {Models});
+
+      assert.isObject(relationship);
+      assert.hasAllKeys(relationship, ['head', 'under']);
+      assert.strictEqual(relationship.head, userId);
+      assert.strictEqual(relationship.under, secondUser.id);
+    });
+
+    it('should create relationship pair already exist', async function() {
+      const {head, under} = relationship;
+      try {
+        const res = await User.createUserRelationship(head, under, {Models});
+        assert.isUndefined(res);
+      } catch(e) {
+        assert.instanceOf(e, Error);
+        assert.equal(e.message, `Pair head = ${head}, under = ${under} already exists`)
+      }
+    });
+
+    it('should update relationship', async function() {
+      const thirdUser = await User.createUser(await makeUser(), {Models, logger, OAuth: new AuthSuccess()});
+      [relationship] = await User.updateUserRelationships({
+        head: thirdUser.id,
+      }, {under: secondUser.id}, {Models});
+
+      assert.isObject(relationship);
+      assert.hasAllKeys(relationship, ['head', 'under']);
+      assert.strictEqual(relationship.head, thirdUser.id);
+      assert.strictEqual(relationship.under, secondUser.id);
+    });
+
+    it('should delete relationships', async function() {
+      const res = await User.deleteUserRelationship(relationship.head, relationship.under, {Models});
+
+      assert.isBoolean(res);
+      assert.isTrue(res);
+    });
+
     it('should delete by id', async function () {
       const res = await User.deleteUser(userId, {Models, logger});
 
@@ -106,9 +154,11 @@ describe('usersService tests', function () {
   });
 
   describe('Error behavior', function () {
-    const userData = makeUser();
+    let userData;
 
     it('should create', async function () {
+      userData = await makeUser();
+
       userData.lastName = null;
 
       try {
@@ -155,6 +205,39 @@ describe('usersService tests', function () {
       }
 
       await sleep(timeout);
+    });
+
+    it('should create relationship users does not exist', async function() {
+      const head = 0,
+        under = 0;
+      try {
+        const res = await User.createUserRelationship(head, under, {Models});
+        assert.isUndefined(res);
+      } catch(e) {
+        assert.instanceOf(e, Error);
+        assert.equal(e.message, `One or more users out of (${head}, ${under}) does not exist`);
+      }
+    });
+
+    it('should update relationship', async function() {
+      const where = {under: 0};
+      try {
+        const res = await User.updateUserRelationships({head: 123}, where, {Models});
+        assert.isUndefined(res);
+      } catch(e) {
+        assert.instanceOf(e, Error);
+        assert.equal(e.message, `no records found with filter '${JSON.stringify(where)}'`)
+      }
+    });
+
+    it('should delete relationships', async function() {
+      try {
+        const res = await User.deleteUserRelationship(0, 0, {Models});
+        assert.isUndefined(res)
+      } catch(e) {
+        assert.instanceOf(e, Error);
+        assert.equal(e.message, `Pair head = 0, under = 0 does not exist`)
+      }
     });
 
     it('should delete by id', async function () {

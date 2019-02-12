@@ -1,5 +1,5 @@
 'use strict';
-const User = require('../service/usersService');
+const usersService = require('../service/usersService');
 
 module.exports = {
   /**
@@ -11,7 +11,7 @@ module.exports = {
    */
   createUser: async({userData}, ext, writeError) => {
     try {
-      return await User.createUser(userData.value, ext);
+      return await usersService.createUser(userData.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
@@ -25,7 +25,7 @@ module.exports = {
    */
   updateUser: async({userId, userData}, ext, writeError) => {
     try {
-      return await User.updateUser(userId.value, userData.value, ext);
+      return await usersService.updateUser(userId.value, userData.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
@@ -39,7 +39,7 @@ module.exports = {
    */
   getUser: async({userId}, ext, writeError) => {
     try {
-      return await User.getUser(userId.value, ext);
+      return await usersService.getUser(userId.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
@@ -53,7 +53,7 @@ module.exports = {
    */
   deleteUser: async({userId}, ext, writeError) => {
     try {
-      return await User.deleteUser(userId.value, ext);
+      return await usersService.deleteUser(userId.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
@@ -67,9 +67,54 @@ module.exports = {
    */
   searchUsers: async({searchParams}, ext, writeError) => {
     try {
-      return await User.searchUsers(searchParams.value, ext);
+      return await usersService.searchUsers(searchParams.value, ext);
     } catch(error) {
       return writeError(error.message);
+    }
+  },
+  /**
+   * Create users relationship
+   * @param {Number} head
+   * @param {Number} under
+   * @param {Object} ext
+   * @param {Function} writeError
+   * @return {Promise<*>}
+   */
+  createUserRelationship: async({head, under}, ext, writeError) => {
+    try {
+      return await usersService.createUserRelationship(head, under, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  /**
+   * Update users relationships
+   * @param {Object} params
+   * @param {Object} where
+   * @param {Object} ext
+   * @param {Function} writeError
+   * @return {Promise<*>}
+   */
+  updateUserRelationships: async({params, where}, ext, writeError) => {
+    try {
+      return await usersService.updateUserRelationships(params, where, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  /**
+   * Delete users relationship
+   * @param {Number} head
+   * @param {Number} under
+   * @param {Object} ext
+   * @param {Function} writeError
+   * @return {Promise<*>}
+   */
+  deleteUserRelationship: async({head, under}, ext, writeError) => {
+    try {
+      return await usersService.deleteUserRelationship(head, under, ext);
+    } catch(error) {
+      return writeError(error);
     }
   }
 };

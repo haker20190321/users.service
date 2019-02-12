@@ -1,23 +1,21 @@
 'use strict';
 
-const tableName = 'usersRoles';
+const tableName = 'usersHierarchy';
 
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(tableName, {
-    userId: {
+    head: {
       allowNull: false,
       type: Sequelize.INTEGER
     },
-    roleId: {
+    under: {
       allowNull: false,
       type: Sequelize.INTEGER
     }
   })
     .then(() => Promise.all([
-      queryInterface.addIndex(tableName, {fields: ['userId']}),
-      queryInterface.addIndex(tableName, {fields: ['roleId']}),
-      queryInterface.addConstraint(tableName, ['userId', 'roleId'], {type: 'unique'}),
-      queryInterface.addConstraint(tableName, ['userId'], {
+      queryInterface.addConstraint(tableName, ['head', 'under'], {type: 'unique'}),
+      queryInterface.addConstraint(tableName, ['head'], {
         type: 'foreign key',
         references: {
           table: 'users',
@@ -26,10 +24,10 @@ module.exports = {
         onDelete: 'cascade',
         onUpdate: 'cascade'
       }),
-      queryInterface.addConstraint(tableName, ['roleId'], {
+      queryInterface.addConstraint(tableName, ['under'], {
         type: 'foreign key',
         references: {
-          table: 'roles',
+          table: 'users',
           field: 'id'
         },
         onDelete: 'cascade',
