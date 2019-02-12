@@ -84,6 +84,9 @@ describe('usersController test', function () {
       const params = {
         userId: {
           value: user.id
+        },
+        appends: {
+          value: []
         }
       };
       const res = await usersController.getUser(params, {Models, logger},errorLog);
@@ -159,6 +162,9 @@ describe('usersController test', function () {
       const params = {
         searchParams: {
           value: {}
+        },
+        appends: {
+          value: []
         }
       };
 

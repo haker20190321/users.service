@@ -100,21 +100,45 @@ module.exports = {
    * Get user by user id
    *
    * @param {Number} userId
+   * @param appends
    * @param {Object} ext
    * @return {Object}
    * @throws {Error}
    */
-  getUser: async(userId, {Models, logger}) => {
+  getUser: async(userId, appends = [], {Models, logger}) => {
     logger.debug('userService.getUser: init');
     logger.debug('userService.getUser: find user');
 
-    const user = await Models.User.findByPk(userId);
+    const options = {};
+
+    if (appends.includes('roles')) {
+      options.include = [{
+        model: Models.Role,
+        as: 'roles',
+        through: {
+          attributes: []
+        },
+        include: [{
+          model: Models.Right,
+          as: 'rights',
+          through: {
+            attributes: []
+          }
+        }]
+      }];
+    }
+
+    const user = await Models.User.findByPk(userId, options);
 
     logger.debug('userService.getUser: find user success');
 
     if (!user) {
       logger.debug('userService.getUser: user is missing');
       throw new Error(`user with id ${userId} is missing`);
+    }
+
+    if (appends.includes('roles')) {
+      return {...user.get('woTs'), roles: user.roles};
     }
 
     return user.get('woTs');
@@ -150,20 +174,46 @@ module.exports = {
    * @param params
    * @param {Object} ext
    * @return {*[]}
+   * @param appends
    */
-  searchUsers: async({limit, offset, where, order}, {Models, logger}) => {
+  searchUsers: async({limit, offset, where, order}, appends = [], {Models, logger}) => {
     logger.debug('userService.searchUsers: init');
     logger.debug('userService.searchUsers: search users');
-    const users = await Models.User.findAll({
+    const options = {
       limit,
       offset,
       where,
       order
-    });
+    };
+
+    if (appends.includes('roles')) {
+      options.include = [{
+        model: Models.Role,
+        as: 'roles',
+        through: {
+          attributes: []
+        },
+        include: [{
+          model: Models.Right,
+          as: 'rights',
+          through: {
+            attributes: []
+          }
+        }]
+      }];
+    }
+
+    const users = await Models.User.findAll(options);
 
     logger.debug('userService.searchUsers: search users success');
 
-    return users.map((item) => item.get('woTs'));
+    return users.map((item) => {
+      if (appends.includes('roles')) {
+        return {...item.get('woTs'), roles: item.roles};
+      }
+
+      return item.get('woTs');
+    });
   },
   /**
    * Set user relationship

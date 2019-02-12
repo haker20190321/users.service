@@ -49,13 +49,13 @@ describe('rolesController', function() {
         roleId: {
           value: role.id
         },
-        withRights: {
-          value: false
+        appends: {
+          value: ['rights']
         }
       }, ext, errorLog);
 
       assert.isObject(res);
-      assert.hasAllKeys(res, roleFields);
+      assert.hasAllKeys(res, [...roleFields, 'rights']);
       assert.equal(role.id, res.id);
       assert.equal(role.title, res.title);
     });
@@ -69,8 +69,8 @@ describe('rolesController', function() {
         searchParams: {
           value: params
         },
-        withRights: {
-          value: false
+        appends: {
+          value: []
         }
       }, ext, errorLog);
 
@@ -249,6 +249,22 @@ describe('rolesController', function() {
         assert.isTrue([role.id].includes(role.id));
       })
     });
+
+
+    it('should getUserRoles', async function() {
+      const res = await rolesController.getUserRoles({
+        userId: {
+          value: user.id
+        }
+      }, {Models}, errorLog);
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+      res.forEach(item => {
+        assert.hasAllKeys(item, roleFields);
+      })
+    });
+
 
     it('should deleteUserRole', async function() {
       const res = await rolesController.deleteUserRole({
@@ -489,6 +505,16 @@ describe('rolesController', function() {
         },
         rolesIds: {
           value: [role.id]
+        }
+      }, ext, errorLog);
+
+      assert.isUndefined(res);
+    });
+
+    it('should getUserRoles', async function() {
+      const res = await rolesController.getUserRoles({
+        userId: {
+          value: user.id
         }
       }, ext, errorLog);
 
