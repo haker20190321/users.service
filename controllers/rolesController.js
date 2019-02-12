@@ -114,5 +114,12 @@ module.exports = {
     } catch(error) {
       return writeError(error.message);
     }
+  },
+  getRoleRights: async({roleId}, ext, writeError) => {
+    try {
+      return await rolesService.getRoleRight(roleId.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
   }
 };
