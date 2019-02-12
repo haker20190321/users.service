@@ -1,26 +1,29 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const UserRole = sequelize.define('UserRole', {
-    userId: {
+  const Position = sequelize.define('Position', {
+    id: {
       allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
       type: DataTypes.INTEGER
     },
-    roleId: {
+    name: {
+      allowNull: false,
+      type: DataTypes.STRING
+    },
+    departmentId: {
       allowNull: false,
       type: DataTypes.INTEGER
     }
   }, {
     timestamps: false,
     paranoid: false,
-    tableName: 'usersRoles',
-    freezeTableName: true
+    tableName: 'positions'
   });
 
-  UserRole.removeAttribute('id');
-
-  UserRole.associate = function() {
+  Position.associate = function() {
     // associations can be defined here
   };
 
-  return UserRole;
+  return Position;
 };

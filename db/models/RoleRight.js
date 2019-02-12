@@ -1,12 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const RoleRight = sequelize.define('RoleRight', {
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
-    },
     roleId: {
       allowNull: false,
       type: DataTypes.INTEGER
@@ -18,8 +12,11 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     timestamps: false,
     paranoid: false,
-    tableName: 'rolesRights'
+    tableName: 'rolesRights',
+    freezeTableName: true
   });
+
+  RoleRight.removeAttribute('id');
 
   RoleRight.associate = function() {
     // associations can be defined here

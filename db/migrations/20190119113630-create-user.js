@@ -26,6 +26,10 @@ module.exports = {
     middleName: {
       type: DataTypes.STRING
     },
+    positionId: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
     isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -48,7 +52,16 @@ module.exports = {
       queryInterface.addIndex(tableName, {fields: ['deletedAt']}),
       queryInterface.addIndex(tableName, {fields: ['createdAt']}),
       queryInterface.addIndex(tableName, {fields: ['isActive']}),
-      queryInterface.addIndex(tableName, {fields: ['login']})
+      queryInterface.addIndex(tableName, {fields: ['login']}),
+      queryInterface.addConstraint(tableName, ['positionId'], {
+        type: 'foreign key',
+        references: {
+          table: 'positions',
+          field: 'id'
+        },
+        onDelete: 'restrict',
+        onUpdate: 'cascade'
+      })
     ])),
   down: (queryInterface) => queryInterface.dropTable(tableName)
 };

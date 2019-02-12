@@ -164,5 +164,69 @@ module.exports = {
     logger.debug('userService.searchUsers: search users success');
 
     return users.map((item) => item.get('woTs'));
+  },
+  /**
+   * Set user relationship
+   * @param {Number} head
+   * @param {Number} under
+   * @param {Object} Models
+   * @return {Promise<*>} inserted rows
+   */
+  createUserRelationship: async(head, under, {Models}) => {
+    const {
+      UniqueConstraintError,
+      ForeignKeyConstraintError
+    } = Models.Sequelize;
+
+    try {
+      const pair = await Models.UsersHierarchy.create({head, under});
+
+      return pair.get({plain: true});
+    } catch(error) {
+      let {message} = error;
+
+      /* istanbul ignore else */
+      if (error instanceof UniqueConstraintError) {
+        message = `Pair head = ${head}, under = ${under} already exists`;
+      } else if (error instanceof ForeignKeyConstraintError) {
+        message = `One or more users out of (${head}, ${under}) does not exist`;
+      }
+
+      throw new Error(message);
+    }
+  },
+  /**
+   * Update user relationships
+   * @param {Object} params
+   * @param {Object} where
+   * @param {Object} Models
+   * @return {Promise<*>} updated rows
+   */
+  updateUserRelationships: async(params, where, {Models}) => {
+    const [cnt, res] = await Models.UsersHierarchy.update(params, {where, returning: true});
+
+    if (!cnt) {
+      throw new Error(`no records found with filter '${JSON.stringify(where)}'`);
+    }
+
+    return res.map((item) => item.get({plain: true}));
+  },
+  /**
+   * Delete user relationship
+   * @param {Number} head
+   * @param {Number} under
+   * @param {Object} Models
+   * @return {Promise<boolean>}
+   */
+  deleteUserRelationship: async(head, under, {Models}) => {
+    const cnt = await Models.UsersHierarchy.destroy({
+      where: {head, under}
+    });
+
+    if (!cnt) {
+      throw new Error(`Pair head = ${head}, under = ${under} does not exist`);
+    }
+
+    return cnt > 0;
   }
 };
