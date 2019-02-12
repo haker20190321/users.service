@@ -48,6 +48,9 @@ describe('rolesController', function() {
       const res = await rolesController.getRole({
         roleId: {
           value: role.id
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 
@@ -65,6 +68,9 @@ describe('rolesController', function() {
       const res = await rolesController.searchRoles({
         searchParams: {
           value: params
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 
@@ -310,6 +316,9 @@ describe('rolesController', function() {
       const res = await rolesController.getRole({
         roleId: {
           value: role.id
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 
@@ -329,6 +338,9 @@ describe('rolesController', function() {
       const res = await rolesController.searchRoles({
         searchParams: {
           value: params
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 

@@ -15,11 +15,23 @@ module.exports = {
   /**
    * Get role by id
    * @param roleId
+   * @param withRights
    * @param Models
    * @return {Promise<*>}
    */
-  getRole: async(roleId, {Models}) => {
-    const role = await Models.Role.findByPk(roleId);
+  getRole: async(roleId, withRights, {Models}) => {
+    const options = {};
+
+    if (withRights) {
+      options.include = [{
+        model: Models.Right,
+        as: 'rights',
+        through: {
+          attributes: []
+        }
+      }];
+    }
+    const role = await Models.Role.findByPk(roleId, options);
 
     if (!role) {
       throw new Error(`role with id ${roleId} is missing`);
@@ -33,15 +45,28 @@ module.exports = {
    * @param limit
    * @param offset
    * @param order
+   * @param withRights
    * @param Models
    */
-  searchRoles: async({where, limit, offset, order}, {Models}) => {
-    const roles = await Models.Role.findAll({
+  searchRoles: async({where, limit, offset, order}, withRights, {Models}) => {
+    const options = {
       limit,
       offset,
       where,
       order
-    });
+    };
+
+    if (withRights) {
+      options.include = [{
+        model: Models.Right,
+        as: 'rights',
+        through: {
+          attributes: []
+        }
+      }];
+    }
+
+    const roles = await Models.Role.findAll(options);
 
     return roles.map((item) => item.get({plain: true}));
   },

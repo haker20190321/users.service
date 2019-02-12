@@ -78,10 +78,18 @@ describe('rolesService test', function () {
   });
 
   it('should getRole', async function () {
-    const res = await rolesService.getRole(roleId, {Models});
+    const res = await rolesService.getRole(roleId, false, {Models});
 
     assert.isObject(res);
     assert.hasAllKeys(res, roleFields);
+    assert.strictEqual(roleId, res.id);
+  });
+
+  it('should getRole with rights', async function () {
+    const res = await rolesService.getRole(roleId, true, {Models});
+
+    assert.isObject(res);
+    assert.hasAllKeys(res, [...roleFields, 'rights']);
     assert.strictEqual(roleId, res.id);
   });
 
@@ -92,7 +100,20 @@ describe('rolesService test', function () {
       where: {
         id: {$eq: roleId}
       }
-    }, {Models, logger});
+    }, false, {Models, logger});
+
+    assert.isArray(res);
+    assert.isTrue(res.length > 0);
+  });
+
+  it('should searchRoles with rights', async function () {
+    const res = await rolesService.searchRoles({
+      limit: 10,
+      offset: 0,
+      where: {
+        id: {$eq: roleId}
+      }
+    }, true, {Models, logger});
 
     assert.isArray(res);
     assert.isTrue(res.length > 0);
@@ -207,7 +228,7 @@ describe('rolesService test', function () {
 
   it('should getRole after delete', async function() {
     try {
-      const res = await rolesService.getRole(roleId, {Models});
+      const res = await rolesService.getRole(roleId, false, {Models});
       assert.isUndefined(res);
     } catch(e) {
       assert.instanceOf(e, Error);

@@ -10,16 +10,16 @@ module.exports = {
       return writeError(error.message);
     }
   },
-  getRole: async({roleId}, ext, writeError) => {
+  getRole: async({roleId, withRights}, ext, writeError) => {
     try {
-      return await rolesService.getRole(roleId.value, ext);
+      return await rolesService.getRole(roleId.value, withRights.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
   },
-  searchRoles: async({searchParams}, ext, writeError) => {
+  searchRoles: async({searchParams, withRights}, ext, writeError) => {
     try {
-      return await rolesService.searchRoles(searchParams.value, ext);
+      return await rolesService.searchRoles(searchParams.value, withRights.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
