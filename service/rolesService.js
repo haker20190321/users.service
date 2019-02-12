@@ -302,7 +302,7 @@ module.exports = {
 
     return userRole.get({plain: true});
   },
-  getRoleRight: async(roleId, {Models}) => {
+  getRoleRights: async(roleId, {Models}) => {
     const role = await Models.Role.findByPk(roleId, {
       include: [{
         model: Models.Right,
@@ -317,6 +317,6 @@ module.exports = {
       throw new Error(`role with id ${roleId} is missing`);
     }
 
-    return role.rights;
+    return role.rights.map((item) => item.get());
   }
 };

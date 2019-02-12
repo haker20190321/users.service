@@ -185,6 +185,20 @@ describe('rolesController', function() {
       })
     });
 
+    it('should getRoleRights', async function() {
+      const res = await rolesController.getRoleRights({
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+      res.forEach(item => {
+        assert.hasAllKeys(item, rightFields);
+      })
+    });
+
     it('should deleteRoleRight', async function() {
       const res = await rolesController.deleteRoleRight({
         roleId: {
@@ -426,6 +440,16 @@ describe('rolesController', function() {
         },
         rightsIds: {
           value: [right.id]
+        }
+      }, ext, errorLog);
+
+      assert.isUndefined(res);
+    });
+
+    it('should getRoleRights', async function() {
+      const res = await rolesController.getRoleRights({
+        roleId: {
+          value: role.id
         }
       }, ext, errorLog);
 

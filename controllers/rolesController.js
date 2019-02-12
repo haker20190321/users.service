@@ -117,7 +117,7 @@ module.exports = {
   },
   getRoleRights: async({roleId}, ext, writeError) => {
     try {
-      return await rolesService.getRoleRight(roleId.value, ext);
+      return await rolesService.getRoleRights(roleId.value, ext);
     } catch(error) {
       return writeError(error.message);
     }

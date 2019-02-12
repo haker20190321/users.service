@@ -171,6 +171,16 @@ describe('rolesService test', function () {
     })
   });
 
+  it('should getRoleRights', async function() {
+    const res = await rolesService.getRoleRights(roleId, {Models});
+
+    assert.isArray(res);
+    assert.isNotEmpty(res);
+    res.forEach(item => {
+      assert.hasAllKeys(item, rightFields);
+    })
+  });
+
   it('should deleteRoleRight', async function () {
     const res = await rolesService.deleteRoleRight(roleId, rightId, {Models});
 
@@ -243,6 +253,17 @@ describe('rolesService test', function () {
     } catch(e) {
       assert.instanceOf(e, Error);
       assert.equal(e.message, `role with id ${roleId} is missing`)
+    }
+  });
+
+  it('should getRoleRights after delete', async function() {
+    try {
+      const res = await rolesService.getRoleRights(roleId, {Models});
+      assert.isUndefined(res);
+    } catch(e) {
+      assert.instanceOf(e, Error);
+      assert.equal(e.message, `role with id ${roleId} is missing`)
+
     }
   });
 
