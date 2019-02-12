@@ -3,7 +3,7 @@ const Models = require('../db/models');
 const usersController = require('../controllers/usersController');
 const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
 const logger = loggerFunc('Test');
-
+const {AuthSuccess} = require('./mockOAuth');
 
 /** @namespace chai.assert */
 const assert = chai.assert;
@@ -44,7 +44,7 @@ describe('usersController test', function () {
         userData: {
           value: userData
         }
-      }, {Models, logger}, errorLog);
+      }, {Models, logger, OAuth: new AuthSuccess()}, errorLog);
 
       assert.typeOf(user, 'object');
       assert.hasAllKeys(user, usersFields);
