@@ -124,7 +124,7 @@ describe('rolesService test', function () {
     }, ['rights'], {Models, logger});
 
     assert.isArray(res);
-    assert.isTrue(res.length > 0);
+    assert.isNotNull(res);
   });
 
   it('should searchRoles with rights', async function () {

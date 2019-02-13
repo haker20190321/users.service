@@ -198,8 +198,9 @@ module.exports = {
   setRoleRights: async(roleId, rightsIds, {Models}) =>
     await Models.sequelize.transaction(async(transaction) => {
       await Models.RoleRight.destroy({
-        where: {roleId: {[Models.Sequelize.Op.eq]: roleId}}
-      }, {transaction});
+        where: {roleId: {[Models.Sequelize.Op.eq]: roleId}},
+        transaction
+      });
 
       const rolesRights = await Models.RoleRight.bulkCreate(rightsIds.map((rightId) => {
         return {roleId, rightId};
@@ -255,8 +256,9 @@ module.exports = {
   setUserRoles: async(userId, rolesIds, {Models}) =>
     await Models.sequelize.transaction(async(transaction) => {
       await Models.UserRole.destroy({
-        where: {userId: {[Models.Sequelize.Op.eq]: userId}}
-      }, {transaction});
+        where: {userId: {[Models.Sequelize.Op.eq]: userId}},
+        transaction
+      });
 
       const userRoles = await Models.UserRole.bulkCreate(rolesIds.map((roleId) => {
         return {userId, roleId};
