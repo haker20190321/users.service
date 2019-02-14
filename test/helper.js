@@ -1,18 +1,20 @@
 const randomstring = require('randomstring');
 const positionsService = require('../service/positionsService');
 const Models = require('../db/models');
+const faker = require('faker');
 
 module.exports.makeUser =  async () => {
-  const login = randomstring.generate(12);
+  const login = faker.internet.userName();
+
   const position = await getTestPosition();
 
   return {
     login,
-    password: login,
+    password: `${login}_1`,
     email: `${login}@email.test`,
-    firstName: `${login}_fn`,
-    lastName: `${login}_ln`,
-    middleName: `${login}_pn`,
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    middleName: faker.name.prefix(),
     birthday: new Date().toISOString(),
     positionId: position.id
   };

@@ -16,12 +16,10 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login',
   'positionId'
 ];
 
-const {makeUser, sleep} = require('./helper');
-const timeout = 0;
+const {makeUser} = require('./helper');
 const errorLog = console.warn;
 
 describe('usersController test', function () {
@@ -56,8 +54,6 @@ describe('usersController test', function () {
 
       assert.typeOf(user, 'object');
       assert.hasAllKeys(user, usersFields);
-
-      await sleep(timeout);
     });
 
     it('should updateUser', async function () {
@@ -76,8 +72,6 @@ describe('usersController test', function () {
       assert.hasAllKeys(res, usersFields);
       assert.strictEqual(firstName, res.firstName);
       assert.strictEqual(user.id, res.id);
-
-      await sleep(timeout);
     });
 
     it('should getUser', async function () {
@@ -90,8 +84,6 @@ describe('usersController test', function () {
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
       assert.strictEqual(user.id, res.id);
-
-      await sleep(timeout);
     });
 
     let secondUser;
@@ -151,8 +143,6 @@ describe('usersController test', function () {
       const res = await usersController.deleteUser(params, {Models, logger}, errorLog);
 
       assert.isTrue(res);
-
-      await sleep(timeout);
     });
 
     it('should searchUsers', async function () {
@@ -168,8 +158,6 @@ describe('usersController test', function () {
       res.forEach(user => {
         assert.hasAllKeys(user, usersFields);
       });
-
-      await sleep(timeout);
     });
   });
 
@@ -178,7 +166,7 @@ describe('usersController test', function () {
 
     it('should init', async function() {
       userData = await makeUser();
-      delete userData.login;
+      delete userData.firstName;
     });
 
 
@@ -204,8 +192,6 @@ describe('usersController test', function () {
       const res = await usersController.updateUser(params, {Models, logger}, errorLog);
 
       assert.isUndefined(res);
-
-      await sleep(timeout);
     });
 
     it('should getUser', async function () {
@@ -216,8 +202,6 @@ describe('usersController test', function () {
       };
       const res = await usersController.getUser(params, {Models, logger},errorLog);
       assert.isUndefined(res);
-
-      await sleep(timeout);
     });
 
     it('should deleteUser', async function () {
@@ -229,8 +213,6 @@ describe('usersController test', function () {
       const res = await usersController.deleteUser(params, {Models, logger}, errorLog);
 
       assert.isUndefined(res);
-
-      await sleep(timeout);
     });
 
     it('should searchUsers', async function () {
@@ -249,8 +231,6 @@ describe('usersController test', function () {
       const res = await usersController.searchUsers(params, {Models, logger}, errorLog);
 
       assert.isUndefined(res);
-
-      await sleep(timeout);
     });
 
     let secondUser;
@@ -263,8 +243,6 @@ describe('usersController test', function () {
 
         assert.isUndefined(res);
     });
-
-    let thirdUser;
 
     it('should updateUserRelationship', async function() {
       const res = await usersController.updateUserRelationships({

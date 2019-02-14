@@ -10,54 +10,34 @@ module.exports = {
    * @return {Promise<*>}
    */
   createUser: async(userData, {Models, OAuth, logger}) => {
-    logger.debug('userService.createUser: init');
-    // проверить существование аккаунта с таким логином
-    const {Op} = Models.Sequelize;
+    logger.debug('createUser: init');
     const {login} = userData;
 
     try {
-      logger.debug('userService.createUser: check login in service - start');
+      logger.debug('createUser: check login - start');
 
-      const cnt = await Models.User.count({
-        where: {
-          login: {[Op.eq]: login}
-        },
-        paranoid: false
-      });
+      const exist = await OAuth.check(login);
 
-      logger.debug('userService.createUser: check login in service - success');
-
-      if (cnt) {
-        logger.debug(`userService.createUser: check login in service - ` +
-          `login '${userData.login}' is exist`);
-
-        throw new Error(`User with login ${userData.login} is exist in service`);
-      }
-
-      logger.debug(`userService.createUser: check login in ldap - start`);
-
-      const exist = await OAuth.check(login, false);
-
-      logger.debug(`userService.createUser: check login in ldap - success`);
+      logger.debug('createUser: check login - success');
 
       if (exist) {
-        throw new Error(`User with login ${userData.login} is exist in ldap`);
+        throw new Error(`user with login ${login} is exist`);
       }
 
-      logger.debug('userService.createUser: create account in ldap - start');
+      logger.debug('createUser: create ldap - start');
 
       const id = await OAuth.create(userData);
 
-      logger.debug('userService.createUser: create account in ldap - success');
+      logger.debug('createUser: create ldap - success');
 
-      logger.debug('userService.createUser: create user in service - start');
+      logger.debug('createUser: create user - start');
 
       const user = await Models.User.create({
         ...userData,
         id
       });
 
-      logger.debug('userService.createUser: create user in service - success');
+      logger.debug('createUser: create user - success');
 
       return user.get('woTs');
     } catch(error) {

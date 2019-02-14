@@ -1,4 +1,5 @@
 'use strict';
+const ip = require('ip');
 
 module.exports = {
   knex: {
@@ -21,12 +22,21 @@ module.exports = {
   },
   closeTimeout: 300,
   oauth: {
-    hostname: 'oauth2.esoft.cloud',
+    hostname: 'dev-oauth.esoft.cloud',
     path: '/api/v1',
     clientId: 'dev_ecosystem_001',
     clientSecret: 't715mrk8RF9Q6ZUq',
-    redirectUri: '',
+    redirectUri: 'http://app.esoft.team:9090/auth/handle',
     apiKey: 'YWpQM2JVNGJHQkI3OXVnbnVoQlByY2dXVXNSVGdaaDZrZGpnNDVuTlBuaDZ1ZWZSIDEwLjEyLjEuNzk=',
+    apiKeys: {
+      accounts: {
+        get: 'C-9-5-15-AfT7bqVMp-CkpyQgpG8-d7mbYcREs-3597',
+        post: 'E-4-4-19-xcXoynwIv-U9XvFDSH0-d7F3TRgGc-5973',
+        put: 'Z-8-3-54-9doPBmARq-4qepWgT4s-kmpnwexzb-7910',
+        delete: 'E-2-9-77-t9Es5LgmL-om3bNoUfo-SoiYusFwY-1455'
+      }
+    },
+    myIp: ip.address(),
     requestTimeout: 6000
   }
 };

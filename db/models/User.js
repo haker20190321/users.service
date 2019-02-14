@@ -7,11 +7,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    login: {
-      allowNull: false,
-      type: DataTypes.STRING,
-      unique: true
-    },
     firstName: {
       allowNull: false,
       type: DataTypes.STRING
@@ -60,7 +55,6 @@ module.exports = (sequelize, DataTypes) => {
       woTs() {
         return {
           id: this.id,
-          login: this.login,
           firstName: this.firstName,
           lastName: this.lastName,
           middleName: this.middleName,
