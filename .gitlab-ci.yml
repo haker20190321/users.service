@@ -2,6 +2,7 @@ stages:
   - install
   - lint
   - test
+  - coverage
   
 image: node:10.15.0-alpine
 
@@ -57,4 +58,18 @@ test:
     - npm test
   only:
   - merge_requests
+  
+##################
+###### TEST ######
+##################
+ 
+coverage:
+  stage: coverage
+  tags:
+    - ecosystem-etagi
+  script:
+    - npm run coverage 
+  only:
+  - merge_requests
+
 
