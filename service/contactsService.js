@@ -19,15 +19,21 @@ module.exports = {
    * @param Models
    * @return {Promise<{}[]>}
    */
-  setUserContacts: async(userId, userContacts, {Models}) => {
-    const contacts = await Models.Contact.bulkCreate(userContacts.map((contact) => {
-      contact.userId = userId;
+  setUserContacts: async(userId, userContacts, {Models}) =>
+    await Models.sequelize.transaction(async(transaction) => {
+      await Models.Contact.destroy({
+        where: {userId},
+        transaction
+      });
 
-      return contact;
-    }));
+      const contacts = await Models.Contact.bulkCreate(userContacts.map((contact) => {
+        contact.userId = userId;
 
-    return contacts.map((item) => item.woTs());
-  },
+        return contact;
+      }, {transaction}));
+
+      return contacts.map((item) => item.woTs());
+    }),
   /**
    * Search user contacts
    * @param where
