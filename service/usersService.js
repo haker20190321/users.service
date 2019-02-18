@@ -39,7 +39,14 @@ module.exports = {
 
       logger.debug('createUser: create user - success');
 
-      return user.get('woTs');
+      return user.fields([
+        'id',
+        'firstName',
+        'lastName',
+        'middleName',
+        'positionId',
+        'isActive'
+      ]);
     } catch(error) {
       logger.debug('userService.createUser: error catch');
 
@@ -74,7 +81,14 @@ module.exports = {
 
     logger.debug('userService.updateUser: update user success');
 
-    return user.get('woTs');
+    return user.fields([
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ]);
   },
   /**
    * Get user by user id
@@ -97,7 +111,14 @@ module.exports = {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    return user.get('woTs');
+    return user.fields([
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ]);
   },
   /**
    * Delete user by user id
@@ -143,7 +164,14 @@ module.exports = {
 
     logger.debug('userService.searchUsers: search users success');
 
-    return users.map((item) => item.get('woTs'));
+    return users.map((item) => item.fields([
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ]));
   },
   /**
    * Set user relationship

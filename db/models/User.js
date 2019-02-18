@@ -49,20 +49,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     timestamps: true,
     paranoid: true,
-    tableName: 'users',
-    getterMethods: {
-      // with out timestamps
-      woTs() {
-        return {
-          id: this.id,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          middleName: this.middleName,
-          isActive: this.isActive,
-          positionId: this.positionId
-        };
-      }
-    }
+    tableName: 'users'
   });
 
   User.associate = function() {
