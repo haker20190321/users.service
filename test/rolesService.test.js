@@ -78,10 +78,18 @@ describe('rolesService test', function () {
   });
 
   it('should getRole', async function () {
-    const res = await rolesService.getRole(roleId, {Models});
+    const res = await rolesService.getRole(roleId, false, {Models});
 
     assert.isObject(res);
     assert.hasAllKeys(res, roleFields);
+    assert.strictEqual(roleId, res.id);
+  });
+
+  it('should getRole with rights', async function () {
+    const res = await rolesService.getRole(roleId, true, {Models});
+
+    assert.isObject(res);
+    assert.hasAllKeys(res, [...roleFields, 'rights']);
     assert.strictEqual(roleId, res.id);
   });
 
@@ -92,7 +100,20 @@ describe('rolesService test', function () {
       where: {
         id: {$eq: roleId}
       }
-    }, {Models, logger});
+    }, false, {Models, logger});
+
+    assert.isArray(res);
+    assert.isTrue(res.length > 0);
+  });
+
+  it('should searchRoles with rights', async function () {
+    const res = await rolesService.searchRoles({
+      limit: 10,
+      offset: 0,
+      where: {
+        id: {$eq: roleId}
+      }
+    }, true, {Models, logger});
 
     assert.isArray(res);
     assert.isTrue(res.length > 0);
@@ -147,6 +168,16 @@ describe('rolesService test', function () {
     res.forEach(roleRight => {
       assert.equal(roleRight.roleId, roleId);
       assert.equal(roleRight.rightId, rightId);
+    })
+  });
+
+  it('should getRoleRights', async function() {
+    const res = await rolesService.getRoleRights(roleId, {Models});
+
+    assert.isArray(res);
+    assert.isNotEmpty(res);
+    res.forEach(item => {
+      assert.hasAllKeys(item, rightFields);
     })
   });
 
@@ -207,7 +238,7 @@ describe('rolesService test', function () {
 
   it('should getRole after delete', async function() {
     try {
-      const res = await rolesService.getRole(roleId, {Models});
+      const res = await rolesService.getRole(roleId, false, {Models});
       assert.isUndefined(res);
     } catch(e) {
       assert.instanceOf(e, Error);
@@ -222,6 +253,17 @@ describe('rolesService test', function () {
     } catch(e) {
       assert.instanceOf(e, Error);
       assert.equal(e.message, `role with id ${roleId} is missing`)
+    }
+  });
+
+  it('should getRoleRights after delete', async function() {
+    try {
+      const res = await rolesService.getRoleRights(roleId, {Models});
+      assert.isUndefined(res);
+    } catch(e) {
+      assert.instanceOf(e, Error);
+      assert.equal(e.message, `role with id ${roleId} is missing`)
+
     }
   });
 

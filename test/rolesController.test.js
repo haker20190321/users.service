@@ -48,6 +48,9 @@ describe('rolesController', function() {
       const res = await rolesController.getRole({
         roleId: {
           value: role.id
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 
@@ -65,6 +68,9 @@ describe('rolesController', function() {
       const res = await rolesController.searchRoles({
         searchParams: {
           value: params
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 
@@ -176,6 +182,20 @@ describe('rolesController', function() {
         assert.hasAllKeys(item, roleRightFields);
         assert.equal(item.roleId, role.id);
         assert.isTrue([right.id].includes(item.rightId))
+      })
+    });
+
+    it('should getRoleRights', async function() {
+      const res = await rolesController.getRoleRights({
+        roleId: {
+          value: role.id
+        }
+      }, ext, errorLog);
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+      res.forEach(item => {
+        assert.hasAllKeys(item, rightFields);
       })
     });
 
@@ -310,6 +330,9 @@ describe('rolesController', function() {
       const res = await rolesController.getRole({
         roleId: {
           value: role.id
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 
@@ -329,6 +352,9 @@ describe('rolesController', function() {
       const res = await rolesController.searchRoles({
         searchParams: {
           value: params
+        },
+        withRights: {
+          value: false
         }
       }, ext, errorLog);
 
@@ -414,6 +440,16 @@ describe('rolesController', function() {
         },
         rightsIds: {
           value: [right.id]
+        }
+      }, ext, errorLog);
+
+      assert.isUndefined(res);
+    });
+
+    it('should getRoleRights', async function() {
+      const res = await rolesController.getRoleRights({
+        roleId: {
+          value: role.id
         }
       }, ext, errorLog);
 
