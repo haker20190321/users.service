@@ -17,8 +17,13 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'roles'
   });
 
-  Role.associate = function() {
-    // associations can be defined here
+  Role.associate = function(Models) {
+    Role.belongsToMany(Models.Right, {
+      through: Models.RoleRight,
+      foreignKey: 'roleId',
+      otherKey: 'rightId',
+      as: 'rights'
+    });
   };
 
   return Role;

@@ -37,9 +37,9 @@ module.exports = {
    * @param {Function} writeError - error callback
    * @return {Promise<void>}
    */
-  getUser: async({userId}, ext, writeError) => {
+  getUser: async({userId, appends}, ext, writeError) => {
     try {
-      return await usersService.getUser(userId.value, ext);
+      return await usersService.getUser(userId.value, appends.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
@@ -65,9 +65,9 @@ module.exports = {
    * @param {Function} writeError
    * @return {Promise<void>}
    */
-  searchUsers: async({searchParams}, ext, writeError) => {
+  searchUsers: async({searchParams, appends}, ext, writeError) => {
     try {
-      return await usersService.searchUsers(searchParams.value, ext);
+      return await usersService.searchUsers(searchParams.value, appends.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
