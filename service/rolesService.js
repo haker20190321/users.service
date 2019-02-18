@@ -15,11 +15,23 @@ module.exports = {
   /**
    * Get role by id
    * @param roleId
+   * @param appends
    * @param Models
    * @return {Promise<*>}
    */
-  getRole: async(roleId, {Models}) => {
-    const role = await Models.Role.findByPk(roleId);
+  getRole: async(roleId, appends = [], {Models}) => {
+    const options = {};
+
+    if (appends.includes('rights')) {
+      options.include = [{
+        model: Models.Right,
+        as: 'rights',
+        through: {
+          attributes: []
+        }
+      }];
+    }
+    const role = await Models.Role.findByPk(roleId, options);
 
     if (!role) {
       throw new Error(`role with id ${roleId} is missing`);
@@ -33,15 +45,28 @@ module.exports = {
    * @param limit
    * @param offset
    * @param order
+   * @param appends
    * @param Models
    */
-  searchRoles: async({where, limit, offset, order}, {Models}) => {
-    const roles = await Models.Role.findAll({
+  searchRoles: async({where, limit, offset, order}, appends = [], {Models}) => {
+    const options = {
       limit,
       offset,
       where,
       order
-    });
+    };
+
+    if (appends.includes('rights')) {
+      options.include = [{
+        model: Models.Right,
+        as: 'rights',
+        through: {
+          attributes: []
+        }
+      }];
+    }
+
+    const roles = await Models.Role.findAll(options);
 
     return roles.map((item) => item.get({plain: true}));
   },
@@ -170,17 +195,19 @@ module.exports = {
    * @param Models
    * @return {Promise<(Object|any)[]>}
    */
-  setRoleRights: async(roleId, rightsIds, {Models}) => {
-    await Models.RoleRight.destroy({
-      where: {roleId: {[Models.Sequelize.Op.eq]: roleId}}
-    });
+  setRoleRights: async(roleId, rightsIds, {Models}) =>
+    await Models.sequelize.transaction(async(transaction) => {
+      await Models.RoleRight.destroy({
+        where: {roleId: {[Models.Sequelize.Op.eq]: roleId}},
+        transaction
+      });
 
-    const rolesRights = await Models.RoleRight.bulkCreate(rightsIds.map((rightId) => {
-      return {roleId, rightId};
-    }), {returning: true});
+      const rolesRights = await Models.RoleRight.bulkCreate(rightsIds.map((rightId) => {
+        return {roleId, rightId};
+      }), {returning: true, transaction});
 
-    return rolesRights.map((roleRight) => roleRight.get({plain: true}));
-  },
+      return rolesRights.map((roleRight) => roleRight.get({plain: true}));
+    }),
   /**
    * Add right for role
    * @param roleId
@@ -227,15 +254,24 @@ module.exports = {
    * @return {Promise<*>}
    */
   setUserRoles: async(userId, rolesIds, {Models}) => {
-    await Models.UserRole.destroy({
-      where: {userId: {[Models.Sequelize.Op.eq]: userId}}
+    const user = await Models.User.findByPk(userId);
+
+    if (!user) {
+      throw new Error(`user with id ${userId} is not exist`);
+    }
+
+    return await Models.sequelize.transaction(async(transaction) => {
+      await Models.UserRole.destroy({
+        where: {userId: {[Models.Sequelize.Op.eq]: userId}},
+        transaction
+      });
+
+      const userRoles = await Models.UserRole.bulkCreate(rolesIds.map((roleId) => {
+        return {userId, roleId};
+      }), {returning: true, transaction});
+
+      return userRoles.map((userRole) => userRole.get({plain: true}));
     });
-
-    const userRoles = await Models.UserRole.bulkCreate(rolesIds.map((roleId) => {
-      return {userId, roleId};
-    }), {returning: true});
-
-    return userRoles.map((userRole) => userRole.get({plain: true}));
   },
   /**
    * Add role for user
@@ -245,6 +281,12 @@ module.exports = {
    * @return {Promise<*>}
    */
   addUserRole: async(userId, roleId, {Models}) => {
+    const user = await Models.User.findByPk(userId);
+
+    if (!user) {
+      throw new Error(`user with id ${userId} is not exist`);
+    }
+
     const userRole = await Models.UserRole.create({userId, roleId});
 
     return userRole.get({plain: true});
@@ -275,5 +317,39 @@ module.exports = {
     await Models.UserRole.destroy({where});
 
     return userRole.get({plain: true});
+  },
+  getRoleRights: async(roleId, {Models}) => {
+    const role = await Models.Role.findByPk(roleId, {
+      include: [{
+        model: Models.Right,
+        as: 'rights',
+        through: {
+          attributes: []
+        }
+      }]
+    });
+
+    if (!role) {
+      throw new Error(`role with id ${roleId} is missing`);
+    }
+
+    return role.rights.map((item) => item.get());
+  },
+  getUserRoles: async(userId, {Models}) => {
+    const user = await Models.User.findByPk(userId, {
+      include: [{
+        model: Models.Role,
+        as: 'roles',
+        through: {
+          attributes: []
+        }
+      }]
+    });
+
+    if (!user) {
+      throw new Error(`user with id ${userId} is missing`);
+    }
+
+    return user.roles.map((item) => item.get({plain: true}));
   }
 };

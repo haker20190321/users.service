@@ -55,10 +55,26 @@ describe('usersService tests', function () {
     });
 
     it('should get by id', async function () {
-      const res = await User.getUser(userId, {Models, logger});
+      const res = await User.getUser(userId, [], {Models, logger});
 
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
+      assert.strictEqual(userId, res.id);
+    });
+
+    it('should get by id with roles', async function () {
+      const res = await User.getUser(userId, ['roles'], {Models, logger});
+
+      assert.typeOf(res, 'object');
+      assert.hasAllKeys(res, [...usersFields, 'roles']);
+      assert.strictEqual(userId, res.id);
+    });
+
+    it('should get by id with with undefined appends', async function () {
+      const res = await User.getUser(userId, undefined, {Models, logger});
+
+      assert.typeOf(res, 'object');
+      assert.hasAllKeys(res, [...usersFields]);
       assert.strictEqual(userId, res.id);
     });
 
@@ -69,10 +85,36 @@ describe('usersService tests', function () {
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, {Models, logger});
+      }, [], {Models, logger});
 
-      assert.typeOf(res, 'array');
-      assert.isTrue(res.length > 0);
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+    });
+
+    it('should search users with roles', async function () {
+      const res = await User.searchUsers({
+        limit: 10,
+        offset: 0,
+        where: {
+          id: {[Symbol.for('gte')]: 0}
+        }
+      }, ['roles'], {Models, logger});
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+    });
+
+    it('should search users with undefined appends', async function () {
+      const res = await User.searchUsers({
+        limit: 10,
+        offset: 0,
+        where: {
+          id: {[Symbol.for('gte')]: 0}
+        }
+      }, undefined, {Models, logger});
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
     });
 
     let relationship, secondUser;
@@ -154,7 +196,17 @@ describe('usersService tests', function () {
 
     it('should get by id', async function () {
       try {
-        const res = await User.getUser(userId, {Models, logger});
+        const res = await User.getUser(userId, [], {Models, logger});
+        assert.isUndefined(res);
+      } catch (e) {
+        assert.instanceOf(e, Error);
+        assert.strictEqual(e.message, `user with id ${userId} is missing`);
+      }
+    });
+
+    it('should get by id with roles', async function () {
+      try {
+        const res = await User.getUser(userId, ['roles'], {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);

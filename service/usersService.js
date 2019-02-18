@@ -94,15 +94,35 @@ module.exports = {
    * Get user by user id
    *
    * @param {Number} userId
+   * @param appends
    * @param {Object} ext
    * @return {Object}
    * @throws {Error}
    */
-  getUser: async(userId, {Models, logger}) => {
+  getUser: async(userId, appends = [], {Models, logger}) => {
     logger.debug('userService.getUser: init');
     logger.debug('userService.getUser: find user');
 
-    const user = await Models.User.findByPk(userId);
+    const options = {};
+
+    if (appends.includes('roles')) {
+      options.include = [{
+        model: Models.Role,
+        as: 'roles',
+        through: {
+          attributes: []
+        },
+        include: [{
+          model: Models.Right,
+          as: 'rights',
+          through: {
+            attributes: []
+          }
+        }]
+      }];
+    }
+
+    const user = await Models.User.findByPk(userId, options);
 
     logger.debug('userService.getUser: find user success');
 
@@ -111,14 +131,20 @@ module.exports = {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    return user.fields([
+    const fields = [
       'id',
       'firstName',
       'lastName',
       'middleName',
       'positionId',
       'isActive'
-    ]);
+    ];
+
+    if (appends.includes('roles')) {
+      fields.push('roles');
+    }
+
+    return user.fields(fields);
   },
   /**
    * Delete user by user id
@@ -151,27 +177,53 @@ module.exports = {
    * @param params
    * @param {Object} ext
    * @return {*[]}
+   * @param appends
    */
-  searchUsers: async({limit, offset, where, order}, {Models, logger}) => {
+  searchUsers: async({limit, offset, where, order}, appends = [], {Models, logger}) => {
     logger.debug('userService.searchUsers: init');
     logger.debug('userService.searchUsers: search users');
-    const users = await Models.User.findAll({
+    const options = {
       limit,
       offset,
       where,
       order
-    });
+    };
+
+    if (appends.includes('roles')) {
+      options.include = [{
+        model: Models.Role,
+        as: 'roles',
+        through: {
+          attributes: []
+        },
+        include: [{
+          model: Models.Right,
+          as: 'rights',
+          through: {
+            attributes: []
+          }
+        }]
+      }];
+    }
+
+    const users = await Models.User.findAll(options);
 
     logger.debug('userService.searchUsers: search users success');
 
-    return users.map((item) => item.fields([
+    const fields = [
       'id',
       'firstName',
       'lastName',
       'middleName',
       'positionId',
       'isActive'
-    ]));
+    ];
+
+    if (appends.includes('roles')) {
+      fields.push('roles');
+    }
+
+    return users.map((item) => item.fields(fields));
   },
   /**
    * Set user relationship

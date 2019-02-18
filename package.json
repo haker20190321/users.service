@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha ./test/*.test.js --exit",
-    "coverage": "nyc mocha ./test/*.test.js --exit",
-    "coverage-html": "nyc --reporter=html mocha ./test/*.test.js --exit",
-    "lint": "eslint --max-warnings 0 ./",
-    "coverage_percents": "nyc check-coverage --lines 80 --functions 80 --branches 80",
+    "test": "node_modules/.bin/mocha ./test/*.test.js --exit",
+    "coverage": "node_modules/.bin/nyc node_modules/.bin/mocha ./test/*.test.js --exit",
+    "coverage-html": "node_modules/.bin/nyc --reporter=html node_modules/.bin/mocha ./test/*.test.js --exit",
+    "lint": "node_modules/.bin/eslint --max-warnings 0 ./",
+    "coverage_percents": "node_modules/.bin/nyc check-coverage --lines 80 --functions 80 --branches 80",
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "rollback": "node_modules/.bin/sequelize db:migrate:undo",
     "status": "node_modules/.bin/sequelize db:migrate:status"

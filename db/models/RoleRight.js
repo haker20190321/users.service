@@ -12,8 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     timestamps: false,
     paranoid: false,
-    tableName: 'rolesRights',
-    freezeTableName: true
+    tableName: 'rolesRights'
   });
 
   RoleRight.removeAttribute('id');
