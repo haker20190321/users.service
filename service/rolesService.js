@@ -253,8 +253,14 @@ module.exports = {
    * @param Models
    * @return {Promise<*>}
    */
-  setUserRoles: async(userId, rolesIds, {Models}) =>
-    await Models.sequelize.transaction(async(transaction) => {
+  setUserRoles: async(userId, rolesIds, {Models}) => {
+    const user = await Models.User.findByPk(userId);
+
+    if (!user) {
+      throw new Error(`user with id ${userId} is not exist`);
+    }
+
+    return await Models.sequelize.transaction(async(transaction) => {
       await Models.UserRole.destroy({
         where: {userId: {[Models.Sequelize.Op.eq]: userId}},
         transaction
@@ -265,7 +271,8 @@ module.exports = {
       }), {returning: true, transaction});
 
       return userRoles.map((userRole) => userRole.get({plain: true}));
-    }),
+    });
+  },
   /**
    * Add role for user
    * @param userId
@@ -274,6 +281,12 @@ module.exports = {
    * @return {Promise<*>}
    */
   addUserRole: async(userId, roleId, {Models}) => {
+    const user = await Models.User.findByPk(userId);
+
+    if (!user) {
+      throw new Error(`user with id ${userId} is not exist`);
+    }
+
     const userRole = await Models.UserRole.create({userId, roleId});
 
     return userRole.get({plain: true});
