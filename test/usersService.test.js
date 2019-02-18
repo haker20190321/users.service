@@ -1,12 +1,11 @@
 const assert = require('chai').assert;
 const User = require('../service/usersService');
-const positionsService = require('../service/positionsService');
 const Models = require('../db/models');
 const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
 const logger = loggerFunc('Test');
 const {AuthSuccess, AuthExist, AuthReject} = require('./mockOAuth');
 
-const {makeUser, sleep} = require('./helper');
+const {makeUser} = require('./helper');
 const timeout = 0;
 const usersFields = [
   'id',
@@ -14,7 +13,6 @@ const usersFields = [
   'lastName',
   'middleName',
   'isActive',
-  'login',
   'positionId'
 ];
 let userId = null;
@@ -34,34 +32,16 @@ describe('usersService tests', function () {
       assert.hasAllKeys(res, usersFields);
 
       userId = res.id;
-
-      await sleep(timeout);
     });
 
-    it('should create exist login in service', async function () {
+    it('should create exist login', async function () {
       try {
         const res = await User.createUser(userData, {Models, logger, OAuth: new AuthExist()});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
-        assert.equal(e.message, `CreateUser: User with login ${userData.login} is exist in service`);
+        assert.equal(e.message, `CreateUser: user with login ${userData.login} is exist`);
       }
-
-      await sleep(timeout);
-    });
-
-
-    it('should create exist login in ldap', async function () {
-      const userData = await makeUser();
-      try {
-        const res = await User.createUser(userData, {Models, logger,OAuth: new AuthExist()});
-        assert.isUndefined(res);
-      } catch (e) {
-        assert.instanceOf(e, Error);
-        assert.equal(e.message, `CreateUser: User with login ${userData.login} is exist in ldap`);
-      }
-
-      await sleep(timeout);
     });
 
     it('should update', async function () {
@@ -72,8 +52,6 @@ describe('usersService tests', function () {
       assert.hasAllKeys(res, usersFields);
       assert.strictEqual(firstName, res.firstName);
       assert.strictEqual(userId, res.id);
-
-      await sleep(timeout);
     });
 
     it('should get by id', async function () {
@@ -82,8 +60,6 @@ describe('usersService tests', function () {
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, usersFields);
       assert.strictEqual(userId, res.id);
-
-      await sleep(timeout);
     });
 
     it('should get by id with roles', async function () {
@@ -92,8 +68,6 @@ describe('usersService tests', function () {
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, [...usersFields, 'roles']);
       assert.strictEqual(userId, res.id);
-
-      await sleep(timeout);
     });
 
     it('should get by id with with undefined appends', async function () {
@@ -102,8 +76,6 @@ describe('usersService tests', function () {
       assert.typeOf(res, 'object');
       assert.hasAllKeys(res, [...usersFields]);
       assert.strictEqual(userId, res.id);
-
-      await sleep(timeout);
     });
 
     it('should search users', async function () {
@@ -117,8 +89,6 @@ describe('usersService tests', function () {
 
       assert.isArray(res);
       assert.isNotEmpty(res);
-
-      await sleep(timeout);
     });
 
     it('should search users with roles', async function () {
@@ -132,8 +102,6 @@ describe('usersService tests', function () {
 
       assert.isArray(res);
       assert.isNotEmpty(res);
-
-      await sleep(timeout);
     });
 
     it('should search users with undefined appends', async function () {
@@ -147,8 +115,6 @@ describe('usersService tests', function () {
 
       assert.isArray(res);
       assert.isNotEmpty(res);
-
-      await sleep(timeout);
     });
 
     let relationship, secondUser;
@@ -198,8 +164,6 @@ describe('usersService tests', function () {
 
       assert.typeOf(res, 'boolean');
       assert.isTrue(res);
-
-      await sleep(timeout);
     });
   });
 
@@ -217,8 +181,6 @@ describe('usersService tests', function () {
       } catch (e) {
         assert.instanceOf(e, Error);
       }
-
-      await sleep(timeout);
     });
 
     it('should update', async function () {
@@ -230,8 +192,6 @@ describe('usersService tests', function () {
         assert.instanceOf(e, Error);
         assert.strictEqual(e.message, `user with id ${userId} is missing`);
       }
-
-      await sleep(timeout);
     });
 
     it('should get by id', async function () {
@@ -242,8 +202,6 @@ describe('usersService tests', function () {
         assert.instanceOf(e, Error);
         assert.strictEqual(e.message, `user with id ${userId} is missing`);
       }
-
-      await sleep(timeout);
     });
 
     it('should get by id with roles', async function () {
@@ -254,8 +212,6 @@ describe('usersService tests', function () {
         assert.instanceOf(e, Error);
         assert.strictEqual(e.message, `user with id ${userId} is missing`);
       }
-
-      await sleep(timeout);
     });
 
     it('should search users', async function () {
@@ -265,8 +221,6 @@ describe('usersService tests', function () {
       } catch (e) {
         assert.instanceOf(e, Error);
       }
-
-      await sleep(timeout);
     });
 
     it('should create relationship users does not exist', async function() {
@@ -309,8 +263,6 @@ describe('usersService tests', function () {
       } catch (e) {
         assert.instanceOf(e, Error)
       }
-
-      await sleep(timeout);
     });
   });
 });
