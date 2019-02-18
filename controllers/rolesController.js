@@ -10,16 +10,16 @@ module.exports = {
       return writeError(error.message);
     }
   },
-  getRole: async({roleId, withRights}, ext, writeError) => {
+  getRole: async({roleId, appends}, ext, writeError) => {
     try {
-      return await rolesService.getRole(roleId.value, withRights.value, ext);
+      return await rolesService.getRole(roleId.value, appends.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
   },
-  searchRoles: async({searchParams, withRights}, ext, writeError) => {
+  searchRoles: async({searchParams, appends}, ext, writeError) => {
     try {
-      return await rolesService.searchRoles(searchParams.value, withRights.value, ext);
+      return await rolesService.searchRoles(searchParams.value, appends.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
@@ -118,6 +118,13 @@ module.exports = {
   getRoleRights: async({roleId}, ext, writeError) => {
     try {
       return await rolesService.getRoleRights(roleId.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  getUserRoles: async({userId}, ext, writeError) => {
+    try {
+      return await rolesService.getUserRoles(userId.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
