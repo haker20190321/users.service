@@ -18,6 +18,27 @@ module.exports = {
       return writeError(error.message);
     }
   },
+  getUserContact: async({contactId}, ext, writeError) => {
+    try {
+      return await contactsService.getUserContact(contactId.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  updateUserContact: async({contactId, contactData}, ext, writeError) => {
+    try {
+      return await contactsService.updateUserContact(contactId.value, contactData.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  deleteUserContact: async({contactId}, ext, writeError) => {
+    try {
+      return await contactsService.deleteUserContact(contactId.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
   /**
    * Set user contacts
    * @param userId
@@ -57,6 +78,13 @@ module.exports = {
   deleteUserContacts: async({searchParams}, ext, writeError) => {
     try {
       return await contactsService.deleteUserContacts(searchParams.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  getUserContacts: async({userId}, ext, writeError) => {
+    try {
+      return await contactsService.getUserContacts(userId.value, ext);
     } catch(error) {
       return writeError(error.message);
     }

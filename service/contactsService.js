@@ -83,10 +83,8 @@ module.exports = {
       });
 
       const contacts = await Models.Contact.bulkCreate(userContacts.map((contact) => {
-        contact.userId = userId;
-
-        return contact;
-      }, {transaction}));
+        return {...contact, userId};
+      }), {transaction, returning: true});
 
       return contacts.map((item) => item.woTs());
     }),

@@ -19,6 +19,7 @@ const contactFields = [
 
 describe('contactsController test', function () {
   let user = {};
+  let contact = {};
 
   describe('Normal behavior', function () {
 
@@ -27,6 +28,7 @@ describe('contactsController test', function () {
 
       user = await createUser(userData, {Models, OAuth: new AuthSuccess(), logger});
     });
+
 
     it('should addUserContact', async function () {
       const params = {
@@ -40,10 +42,63 @@ describe('contactsController test', function () {
           }
         }
       };
-      const contact = await contactsController.addUserContact(params, ext, errorLog);
+      contact = await contactsController.addUserContact(params, ext, errorLog);
 
       assert.isObject(contact);
       assert.hasAllKeys(contact, contactFields);
+    });
+
+    it('should getUserContact', async function () {
+      const params = {
+        contactId: {
+          value: contact.id
+        }
+      };
+      const res = await contactsController.getUserContact(params, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, contactFields);
+      assert.equal(res.id, contact.id);
+      assert.equal(res.type, contact.type);
+      assert.equal(res.value, contact.value);
+    });
+
+    it('should updateUserContact', async function () {
+      const params = {
+        contactId: {
+          value: contact.id
+        },
+        contactData: {
+          value: {
+            value: faker.phone.phoneNumber()
+          }
+        }
+      };
+
+      const res = await contactsController.updateUserContact(params, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, contactFields);
+      assert.equal(res.id, contact.id);
+      assert.equal(res.type, contact.type);
+      assert.equal(res.value, params.contactData.value.value);
+
+      contact = res;
+    });
+
+    it('should deleteUserContact', async function () {
+      const params = {
+        contactId: {
+          value: contact.id
+        }
+      };
+      const res = await contactsController.deleteUserContact(params, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, contactFields);
+      assert.equal(res.id, contact.id);
+      assert.equal(res.type, contact.type);
+      assert.equal(res.value, contact.value);
     });
 
     it('should setUserContacts', async function () {
@@ -94,6 +149,22 @@ describe('contactsController test', function () {
       })
     });
 
+    it('should getUserContacts', async function () {
+      const params = {
+        userId: {
+          value: user.id
+        }
+      };
+      const res = await contactsController.getUserContacts(params, ext, errorLog);
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+      res.forEach(item => {
+        assert.isObject(item);
+        assert.hasAllKeys(item, contactFields);
+      })
+    });
+
     it('should deleteUserContacts', async function () {
       const searchParams = {
         value: {
@@ -129,6 +200,41 @@ describe('contactsController test', function () {
 
       const contact = await contactsController.addUserContact({contactData}, ext, errorLog);
       assert.isUndefined(contact);
+    });
+
+    it('should getUserContact', async function () {
+      const params = {
+        contactId: {
+          value: contact.id
+        }
+      };
+      const res = await contactsController.getUserContact(params, ext, errorLog);
+      assert.isUndefined(res);
+    });
+
+    it('should updateUserContact', async function () {
+      const params = {
+        contactId: {
+          value: contact.id
+        },
+        contactData: {
+          value: {
+            type: 'email'
+          }
+        }
+      };
+      const res = await contactsController.updateUserContact(params, ext, errorLog);
+      assert.isUndefined(res);
+    });
+
+    it('should deleteUserContact', async function () {
+      const params = {
+        contactId: {
+          value: contact.id
+        }
+      };
+      const res = await contactsController.deleteUserContact(params, ext, errorLog);
+      assert.isUndefined(res);
     });
 
     it('should setUserContacts', async function () {
@@ -167,6 +273,17 @@ describe('contactsController test', function () {
 
       const res = await contactsController.searchUserContacts({searchParams}, ext, errorLog);
 
+      assert.isUndefined(res);
+    });
+
+    it('should getUserContacts', async function () {
+      const params = {
+        userId: {
+          value: 'invalid input'
+        }
+      };
+
+      const res = await contactsController.getUserContacts(params, ext, errorLog);
       assert.isUndefined(res);
     });
 
