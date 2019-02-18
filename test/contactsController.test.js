@@ -29,14 +29,18 @@ describe('contactsController test', function () {
     });
 
     it('should addUserContact', async function () {
-      const contactData = {
-        value: {
-          userId: user.id,
-          type: 'phone',
-          value: faker.phone.phoneNumber()
+      const params = {
+        userId: {
+          value: user.id
+        },
+        contactData: {
+          value: {
+            type: 'phone',
+            value: faker.phone.phoneNumber()
+          }
         }
       };
-      const contact = await contactsController.addUserContact({contactData}, ext, errorLog);
+      const contact = await contactsController.addUserContact(params, ext, errorLog);
 
       assert.isObject(contact);
       assert.hasAllKeys(contact, contactFields);

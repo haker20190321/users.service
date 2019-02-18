@@ -3,12 +3,68 @@
 module.exports = {
   /**
    * Add user contact
+   * @param userId
    * @param contactData
    * @param Models
    * @return {Promise<{}>}
    */
-  addUserContact: async(contactData, {Models}) => {
-    const contact = await Models.Contact.create(contactData);
+  addUserContact: async(userId, contactData, {Models}) => {
+    const contact = await Models.Contact.create({
+      ...contactData,
+      userId
+    });
+
+    return contact.woTs();
+  },
+  /**
+   * Get user contact by id
+   * @param contactId
+   * @param Models
+   * @return {Promise<{}>}
+   */
+  getUserContact: async(contactId, {Models}) => {
+    const contact = await Models.Contact.findByPk(contactId);
+
+    if (!contact) {
+      throw new Error(`contacts with id ${contactId} is not exist`);
+    }
+
+    return contact.woTs();
+  },
+  /**
+   * Update user contact by id
+   * @param contactId
+   * @param contactData
+   * @param Models
+   * @return {Promise<{}>}
+   */
+  updateUserContact: async(contactId, contactData, {Models}) => {
+    const contact = await Models.Contact.findByPk(contactId);
+
+    if (!contact) {
+      throw new Error(`contacts with id ${contactId} is not exist`);
+    }
+
+    await contact.update(contactData, {
+      fields: ['type', 'value']
+    });
+
+    return contact.woTs();
+  },
+  /**
+   * Delete user contact by id
+   * @param contactId
+   * @param Models
+   * @return {Promise<{}>}
+   */
+  deleteUserContact: async(contactId, {Models}) => {
+    const contact = await Models.Contact.findByPk(contactId);
+
+    if (!contact) {
+      throw new Error(`contacts with id ${contactId} is not exist`);
+    }
+
+    await contact.destroy();
 
     return contact.woTs();
   },
@@ -67,6 +123,19 @@ module.exports = {
     }
 
     await Models.Contact.destroy({where});
+
+    return res.map((item) => item.woTs());
+  },
+  /**
+   * Get all user contacts
+   * @param userId
+   * @param Models
+   * @return {Promise<*>}
+   */
+  getUserContacts: async(userId, {Models}) => {
+    const res = Models.Contact.findAll({
+      where: {userId}
+    });
 
     return res.map((item) => item.woTs());
   }

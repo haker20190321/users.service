@@ -18,6 +18,7 @@ const contactFields = [
 describe('contactsService test', function () {
 
   let user = {};
+  let contact = {};
 
   it('should init', async function () {
     const userData = await makeUser();
@@ -27,14 +28,49 @@ describe('contactsService test', function () {
 
   it('should addUserContact', async function () {
     const params = {
-      userId: user.id,
       type: 'phone',
       value: faker.phone.phoneNumber()
     };
-    const contact = await contactsService.addUserContact(params, {Models});
+    contact = await contactsService.addUserContact(user.id, params, {Models});
 
     assert.isObject(contact);
     assert.hasAllKeys(contact, contactFields);
+  });
+
+  it('should getUserContact', async function () {
+    const res = await contactsService.getUserContact(contact.id, {Models});
+
+    assert.isObject(res);
+    assert.hasAllKeys(res, contactFields);
+    assert.equal(res.id, contact.id);
+    assert.equal(res.type, contact.type);
+    assert.equal(res.value, contact.value);
+  });
+
+  it('should updateUserContact', async function () {
+    const params = {
+      value: faker.phone.phoneNumber()
+    };
+
+    const res = await contactsService.updateUserContact(contact.id, params, {Models});
+
+    assert.isObject(res);
+    assert.hasAllKeys(res, contactFields);
+    assert.equal(res.id, contact.id);
+    assert.equal(res.type, contact.type);
+    assert.equal(res.value, params.value);
+
+    contact = res;
+  });
+
+  it('should deleteUserContact', async function () {
+    const res = await contactsService.deleteUserContact(contact.id, {Models});
+
+    assert.isObject(res);
+    assert.hasAllKeys(res, contactFields);
+    assert.equal(res.id, contact.id);
+    assert.equal(res.type, contact.type);
+    assert.equal(res.value, contact.value);
   });
 
   it('should setUserContacts', async function () {
@@ -78,6 +114,17 @@ describe('contactsService test', function () {
     assert.isTrue(res.length <= params.limit);
   });
 
+  it('should getUserContacts', async function () {
+    const res = await contactsService.getUserContacts(user.id, {Models});
+
+    assert.isArray(res);
+    assert.isNotEmpty(res);
+    res.forEach(item => {
+      assert.isObject(item);
+      assert.hasAllKeys(item, contactFields);
+    })
+  });
+
   it('should deleteUserContacts', async function () {
     const where = {
       userId: user.id
@@ -100,10 +147,40 @@ describe('contactsService test', function () {
 
     try {
       const res = await contactsService.deleteUserContacts({where}, {Models});
+      assert.isUndefined(res);
     } catch (e) {
       assert.instanceOf(e, Error);
       assert.equal(e.message, `no records with filter ${JSON.stringify(where)}`);
     }
   });
 
+  it('should getUserContact after delete', async function () {
+    try {
+      const res = await contactsService.getUserContact(contact.id, {Models});
+      assert.isUndefined(res);
+    } catch (e) {
+      assert.instanceOf(e, Error);
+      assert.equal(e.message, `contacts with id ${contact.id} is not exist`)
+    }
+  });
+
+  it('should updateUserContact after delete', async function () {
+    try {
+      const res = await contactsService.updateUserContact(contact.id, {}, {Models});
+      assert.isUndefined(res);
+    } catch (e) {
+      assert.instanceOf(e, Error);
+      assert.equal(e.message, `contacts with id ${contact.id} is not exist`)
+    }
+  });
+
+  it('should deleteUserContact after delete', async function () {
+    try {
+      const res = await contactsService.deleteUserContact(contact.id, {Models});
+      assert.isUndefined(res);
+    } catch (e) {
+      assert.instanceOf(e, Error);
+      assert.equal(e.message, `contacts with id ${contact.id} is not exist`)
+    }
+  });
 });

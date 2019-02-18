@@ -5,14 +5,15 @@ const contactsService = require('../service/contactsService');
 module.exports = {
   /**
    * Add user contacts
+   * @param userId
    * @param contactData
    * @param ext
    * @param writeError
    * @return {Promise<*>}
    */
-  addUserContact: async({contactData}, ext, writeError) => {
+  addUserContact: async({userId, contactData}, ext, writeError) => {
     try {
-      return await contactsService.addUserContact(contactData.value, ext);
+      return await contactsService.addUserContact(userId.value, contactData.value, ext);
     } catch(error) {
       return writeError(error.message);
     }
