@@ -85,7 +85,7 @@ describe('usersService tests', function () {
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, [], {Models, logger});
+      }, undefined, [], {Models, logger});
 
       assert.isArray(res);
       assert.isNotEmpty(res);
@@ -98,7 +98,40 @@ describe('usersService tests', function () {
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, ['roles'], {Models, logger});
+      }, undefined, ['roles'], {Models, logger});
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+    });
+
+    it('should search users with contacts', async function () {
+      const res = await User.searchUsers({
+        limit: 10,
+        offset: 0,
+        where: {
+          id: {[Symbol.for('gte')]: 0}
+        }
+      }, undefined, ['contacts'], {Models, logger});
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+    });
+
+    it('should search users with filer by contacts', async function () {
+      const searchParams = {
+        limit: 10,
+        offset: 0,
+        where: {
+          id: {[Symbol.for('gte')]: 0}
+        }
+      };
+      const filter = {
+        contacts: {
+          where: {type: 'phone', value: {$like: '%912%'}}
+        }
+      };
+      const appends = [];
+      const res = await User.searchUsers(searchParams, filter, appends, {Models, logger});
 
       assert.isArray(res);
       assert.isNotEmpty(res);
@@ -111,7 +144,7 @@ describe('usersService tests', function () {
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, undefined, {Models, logger});
+      }, undefined, undefined, {Models, logger});
 
       assert.isArray(res);
       assert.isNotEmpty(res);
@@ -216,7 +249,7 @@ describe('usersService tests', function () {
 
     it('should search users', async function () {
       try {
-        const res = await User.searchUsers({}, {Models, logger});
+        const res = await User.searchUsers({}, undefined, undefined, {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);

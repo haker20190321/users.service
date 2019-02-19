@@ -18,6 +18,9 @@ module.exports = (sequelize, DataTypes) => {
     middleName: {
       type: DataTypes.STRING
     },
+    fullName: {
+      type: DataTypes.STRING
+    },
     positionId: {
       type: DataTypes.INTEGER
     },
@@ -58,6 +61,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       otherKey: 'roleId',
       as: 'roles'
+    });
+
+    User.hasMany(Models.Contact, {
+      foreignKey: 'userId',
+      as: 'contacts'
     });
   };
 

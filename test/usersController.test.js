@@ -150,11 +150,12 @@ describe('usersController test', function () {
 
     it('should searchUsers', async function () {
       const params = {
-        searchParams: {
-          value: {}
-        },
-        appends: {
-          value: []
+        searchData: {
+          value: {
+            searchParams: {},
+            appends: [],
+            filter: undefined
+          }
         }
       };
 

@@ -173,24 +173,42 @@ module.exports = {
   },
   /**
    * Search users
-   *
-   * @param params
-   * @param {Object} ext
+   * @param {Object} searchParams
+   * @param {Object} filter
+   * @param {Array} appends
+   * @param {Object} Models
+   * @param {Object} logger
    * @return {*[]}
-   * @param appends
    */
-  searchUsers: async({limit, offset, where, order}, appends = [], {Models, logger}) => {
+  searchUsers: async(searchParams, filter = {}, appends = [], {Models, logger}) => {
     logger.debug('userService.searchUsers: init');
-    logger.debug('userService.searchUsers: search users');
+
+    const {
+      limit = 1000,
+      offset = 0,
+      where = {},
+      order = []
+    } = searchParams;
+
     const options = {
       limit,
       offset,
       where,
-      order
+      order,
+      include: []
     };
 
+    const fields = [
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ];
+
     if (appends.includes('roles')) {
-      options.include = [{
+      options.include.push({
         model: Models.Role,
         as: 'roles',
         through: {
@@ -203,25 +221,35 @@ module.exports = {
             attributes: []
           }
         }]
-      }];
+      });
+      fields.push('roles');
     }
+
+    if (appends.includes('contacts')) {
+      options.include.push({
+        model: Models.Contact,
+        as: 'contacts',
+        attributes: ['id', 'userId', 'type', 'value']
+      });
+      fields.push('contacts');
+    }
+
+    if (filter.contacts) {
+      const contacts = await Models.Contact.findAll({
+        where: filter.contacts.where,
+        attributes: ['id']
+      });
+
+      options.where.id = {
+        $in: contacts.map((item) => item.id)
+      };
+    }
+
+    logger.debug('userService.searchUsers: search users');
 
     const users = await Models.User.findAll(options);
 
     logger.debug('userService.searchUsers: search users success');
-
-    const fields = [
-      'id',
-      'firstName',
-      'lastName',
-      'middleName',
-      'positionId',
-      'isActive'
-    ];
-
-    if (appends.includes('roles')) {
-      fields.push('roles');
-    }
 
     return users.map((item) => item.fields(fields));
   },
