@@ -12,9 +12,23 @@ module.exports = {
    * @param writeError
    * @return {Promise<*>}
    */
-  createUserSetting: async({settingData: {value: {userId, key, value}}}, ext, writeError) => {
+  createUserSetting: async({userId, key, value}, ext, writeError) => {
     try {
-      return await settingsService.createUserSetting(userId, key, value, ext);
+      return await settingsService.createUserSetting(userId.value, key.value, value.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  getUserSetting: async({userId, key}, ext, writeError) => {
+    try {
+      return await settingsService.getUserSetting(userId.value, key.value, ext);
+    } catch(error) {
+      return writeError(error.message);
+    }
+  },
+  getUserSettings: async({userId: {value: userId}}, ext, writeError) => {
+    try {
+      return await settingsService.searchUserSettings({where: {userId}}, ext);
     } catch(error) {
       return writeError(error.message);
     }

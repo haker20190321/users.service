@@ -29,6 +29,26 @@ describe('settingsService test', function () {
     assert.equal(res.key, 'foo');
     assert.equal(res.value, 'bar');
   });
+  
+  it('should getUserSetting', async function () {
+      const res = await settingsService.getUserSetting(user.id, 'foo', ext);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, settingsFields);
+      assert.equal(res.userId, user.id);
+      assert.equal(res.key, 'foo');
+      assert.equal(res.value, 'bar');
+  });
+
+  it('should getUserSetting bad key', async function () {
+    try {
+      const res = await settingsService.getUserSetting(user.id, 'badKey', ext);
+      assert.isUndefined(res)
+    } catch(e) {
+      assert.instanceOf(e, Error);
+      assert.equal(e.message, `setting with userId = ${user.id}, key = badKey is not exist`);
+    }
+  });
 
   it('should setUserSettings', async function () {
     const res = await settingsService.setUserSettings(user.id, [

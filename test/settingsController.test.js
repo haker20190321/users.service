@@ -26,15 +26,25 @@ describe('settingsController test', function () {
 
     it('should createUserSetting', async function () {
       const params = {
-        settingData: {
-          value: {
-            userId: user.id,
-            key: 'foo',
-            value: 'bar'
-          }
-        }
+          userId: {value: user.id},
+          key: {value: 'foo'},
+          value: {value: 'bar'}
       };
       const res = await settingsController.createUserSetting(params, ext, errorLog);
+
+      assert.isObject(res);
+      assert.hasAllKeys(res, settingsFields);
+      assert.equal(res.userId, user.id);
+      assert.equal(res.key, 'foo');
+      assert.equal(res.value, 'bar');
+    });
+    
+    it('should getUserSetting', async function () {
+      const params = {
+        userId: {value: user.id},
+        key: {value: 'foo'}
+      };
+      const res = await settingsController.getUserSetting(params, ext, errorLog);
 
       assert.isObject(res);
       assert.hasAllKeys(res, settingsFields);
@@ -58,6 +68,18 @@ describe('settingsController test', function () {
         };
 
         const res = await settingsController.setUserSettings(params, ext, errorLog);
+
+        assert.isArray(res);
+        assert.isNotEmpty(res);
+        assert.lengthOf(res, 3);
+        res.forEach(item => assert.hasAllKeys(item, settingsFields));
+    });
+    
+    it('should getUserSettings', async function () {
+        const params = {
+          userId: {value: user.id}
+        };
+        const res = await settingsController.getUserSettings(params, ext, errorLog);
 
         assert.isArray(res);
         assert.isNotEmpty(res);
@@ -100,16 +122,29 @@ describe('settingsController test', function () {
 
     it('should createUserSetting', async function () {
       const params = {
-        settingData: {
-          value: {
-            userId: 0,
-            key: 'foo',
-            value: 'bar'
-          }
-        }
+        userId: {value: 0},
+        key: {value: 'foo'},
+        value: {value: 'bar'}
       };
       const res = await settingsController.createUserSetting(params, ext, errorLog);
       assert.isUndefined(res);
+    });
+    
+    it('should getUserSetting', async function () {
+        const params = {
+          userId: {value: user.id},
+          key: {value: 'badKey'}
+        };
+        const res = await settingsController.getUserSetting(params, ext, errorLog);
+        assert.isUndefined(res);
+    });
+
+    it('should getUserSettings', async function () {
+        const params = {
+          userId: {value: {bad: 'arg'}}
+        };
+        const res = await settingsController.getUserSettings(params, ext, errorLog);
+        assert.isUndefined(res);
     });
 
     it('should setUserSettings', async function () {

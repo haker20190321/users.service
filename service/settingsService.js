@@ -18,6 +18,18 @@ module.exports = {
 
     return {userId, key, value};
   },
+  getUserSetting: async(userId, key, {Models}) => {
+    const res = await Models.Setting.findOne({
+      where: {userId, key},
+      raw: true
+    });
+
+    if (!res) {
+      throw new Error(`setting with userId = ${userId}, key = ${key} is not exist`);
+    }
+
+    return res;
+  },
   /**
    * Set all user settings
    * @param userId
