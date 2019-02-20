@@ -6,7 +6,7 @@ module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(tableName, {
     userId: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
     key: {
       type: Sequelize.STRING,
