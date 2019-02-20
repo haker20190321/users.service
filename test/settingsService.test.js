@@ -20,7 +20,7 @@ describe('settingsService test', function () {
     user = await createUser(userData, {Models, OAuth: new AuthSuccess(), logger});
   });
 
-  it('should setSetting', async function () {
+  it('should createUserSetting', async function () {
     const res = await settingsService.createUserSetting(user.id, 'foo', 'bar', ext);
 
     assert.isObject(res);
@@ -30,7 +30,7 @@ describe('settingsService test', function () {
     assert.equal(res.value, 'bar');
   });
 
-  it('should setSettings', async function () {
+  it('should setUserSettings', async function () {
     const res = await settingsService.setUserSettings(user.id, [
       {key: 'foo', value: 'baz'},
       {key: 'foo1', value: 'bar11'},
