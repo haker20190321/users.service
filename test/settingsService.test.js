@@ -21,17 +21,17 @@ describe('settingsService test', function () {
   });
 
   it('should setSetting', async function () {
-    const res = await settingsService.createUserSetting(1, 'foo', 'bar', ext);
+    const res = await settingsService.createUserSetting(user.id, 'foo', 'bar', ext);
 
     assert.isObject(res);
     assert.hasAllKeys(res, settingsFields);
-    assert.equal(res.userId, 1);
+    assert.equal(res.userId, user.id);
     assert.equal(res.key, 'foo');
     assert.equal(res.value, 'bar');
   });
 
   it('should setSettings', async function () {
-    const res = await settingsService.setUserSettings(1, [
+    const res = await settingsService.setUserSettings(user.id, [
       {key: 'foo', value: 'baz'},
       {key: 'foo1', value: 'bar11'},
       {key: 'foo2', value: 'bar22'},
@@ -46,7 +46,7 @@ describe('settingsService test', function () {
 
   it('should searchUserSettings', async function () {
     const res = await settingsService.searchUserSettings({
-      where: {userId: 1}
+      where: {userId: user.id}
     }, ext);
 
     assert.isArray(res);
@@ -56,21 +56,21 @@ describe('settingsService test', function () {
   });
 
   it('should deleteUserSetting', async function () {
-    const res = await settingsService.deleteUserSetting(1, 'foo', ext);
+    const res = await settingsService.deleteUserSetting(user.id, 'foo', ext);
 
     assert.isObject(res);
     assert.hasAllKeys(res, settingsFields);
-    assert.equal(res.userId, 1);
+    assert.equal(res.userId, user.id);
     assert.equal(res.key, 'foo');
   });
 
   it('should deleteUserSetting after delete', async function () {
     try {
-      const res = await settingsService.deleteUserSetting(1, 'foo', ext);
+      const res = await settingsService.deleteUserSetting(user.id, 'foo', ext);
       assert.isUndefined(res);
     } catch (e) {
       assert.instanceOf(e, Error);
-      assert.equal(e.message, `setting with userId = 1, key = foo is not exist`);
+      assert.equal(e.message, `setting with userId = ${user.id}, key = foo is not exist`);
     }
   });
 });
