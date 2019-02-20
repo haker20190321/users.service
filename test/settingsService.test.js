@@ -1,4 +1,9 @@
 const assert = require('chai').assert;
+const {createUser} = require('../service/usersService');
+const {makeUser} = require('./helper');
+const {AuthSuccess} = require('./mockOAuth');
+const loggerFunc = require('@esoft_private/esoft-service/src/lib/logger');
+const logger = loggerFunc('Test');
 
 const Models = require('../db/models');
 const settingsService = require('../service/settingsService');
@@ -7,6 +12,14 @@ const ext = {Models};
 const settingsFields = ['userId', 'key', 'value'];
 
 describe('settingsService test', function () {
+  let user = {};
+
+  it('should init', async function () {
+    const userData = await makeUser();
+
+    user = await createUser(userData, {Models, OAuth: new AuthSuccess(), logger});
+  });
+
   it('should setSetting', async function () {
     const res = await settingsService.createUserSetting(1, 'foo', 'bar', ext);
 
