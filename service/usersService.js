@@ -105,6 +105,15 @@ module.exports = {
 
     const options = {};
 
+    const fields = [
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ];
+
     if (appends.includes('roles')) {
       options.include = [{
         model: Models.Role,
@@ -120,6 +129,25 @@ module.exports = {
           }
         }]
       }];
+      fields.push('roles');
+    }
+
+    if (appends.includes('contacts')) {
+      options.include.push({
+        model: Models.Contact,
+        as: 'contacts',
+        attributes: ['type', 'value']
+      });
+      fields.push('contacts');
+    }
+
+    if (appends.includes('settings')) {
+      options.include.push({
+        model: Models.Setting,
+        as: 'settings',
+        attributes: ['key', 'value']
+      });
+      fields.push('settings');
     }
 
     const user = await Models.User.findByPk(userId, options);
@@ -129,19 +157,6 @@ module.exports = {
     if (!user) {
       logger.debug('userService.getUser: user is missing');
       throw new Error(`user with id ${userId} is missing`);
-    }
-
-    const fields = [
-      'id',
-      'firstName',
-      'lastName',
-      'middleName',
-      'positionId',
-      'isActive'
-    ];
-
-    if (appends.includes('roles')) {
-      fields.push('roles');
     }
 
     return user.fields(fields);
@@ -229,9 +244,18 @@ module.exports = {
       options.include.push({
         model: Models.Contact,
         as: 'contacts',
-        attributes: ['id', 'userId', 'type', 'value']
+        attributes: ['type', 'value']
       });
       fields.push('contacts');
+    }
+
+    if (appends.includes('settings')) {
+      options.include.push({
+        model: Models.Setting,
+        as: 'settings',
+        attributes: ['key', 'value']
+      });
+      fields.push('settings');
     }
 
     if (filter.contacts) {
