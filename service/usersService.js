@@ -261,11 +261,11 @@ module.exports = {
     if (filter.contacts) {
       const contacts = await Models.Contact.findAll({
         where: filter.contacts.where,
-        attributes: ['id']
+        attributes: ['userId']
       });
 
       options.where.id = {
-        $in: contacts.map((item) => item.id)
+        $in: contacts.map((item) => item.userId)
       };
     }
 
