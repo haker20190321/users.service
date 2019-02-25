@@ -62,11 +62,12 @@ describe('usersService tests', function () {
       assert.strictEqual(userId, res.id);
     });
 
-    it('should get by id with roles', async function () {
-      const res = await User.getUser(userId, ['roles'], {Models, logger});
+    it('should get by id with appends', async function () {
+      const appends = ['roles', 'contacts', 'settings'];
+      const res = await User.getUser(userId, appends, {Models, logger});
 
       assert.typeOf(res, 'object');
-      assert.hasAllKeys(res, [...usersFields, 'roles']);
+      assert.hasAllKeys(res, [...usersFields, ...appends]);
       assert.strictEqual(userId, res.id);
     });
 
@@ -74,7 +75,7 @@ describe('usersService tests', function () {
       const res = await User.getUser(userId, undefined, {Models, logger});
 
       assert.typeOf(res, 'object');
-      assert.hasAllKeys(res, [...usersFields]);
+      assert.hasAllKeys(res, usersFields);
       assert.strictEqual(userId, res.id);
     });
 
@@ -85,23 +86,60 @@ describe('usersService tests', function () {
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, [], {Models, logger});
+      }, undefined, [], {Models, logger});
 
       assert.isArray(res);
       assert.isNotEmpty(res);
     });
 
-    it('should search users with roles', async function () {
+    it('should search users with appends', async function () {
+      const appends = ['roles', 'contacts', 'settings'];
       const res = await User.searchUsers({
         limit: 10,
         offset: 0,
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, ['roles'], {Models, logger});
+      }, undefined, appends, {Models, logger});
 
       assert.isArray(res);
       assert.isNotEmpty(res);
+      res.forEach(item => {
+        assert.isObject(item);
+        assert.hasAllKeys(item, [...usersFields, ...appends])
+      })
+    });
+
+    it('should search users with contacts', async function () {
+      const res = await User.searchUsers({
+        limit: 10,
+        offset: 0,
+        where: {
+          id: {[Symbol.for('gte')]: 0}
+        }
+      }, undefined, ['contacts'], {Models, logger});
+
+      assert.isArray(res);
+      assert.isNotEmpty(res);
+    });
+
+    it('should search users with filer by contacts', async function () {
+      const searchParams = {
+        limit: 10,
+        offset: 0,
+        where: {
+          id: {[Symbol.for('gte')]: 0}
+        }
+      };
+      const filter = {
+        contacts: {
+          where: {type: 'phone'}
+        }
+      };
+      const appends = [];
+      const res = await User.searchUsers(searchParams, filter, appends, {Models, logger});
+
+      assert.isArray(res);
     });
 
     it('should search users with undefined appends', async function () {
@@ -111,7 +149,7 @@ describe('usersService tests', function () {
         where: {
           id: {[Symbol.for('gte')]: 0}
         }
-      }, undefined, {Models, logger});
+      }, undefined, undefined, {Models, logger});
 
       assert.isArray(res);
       assert.isNotEmpty(res);
@@ -204,9 +242,9 @@ describe('usersService tests', function () {
       }
     });
 
-    it('should get by id with roles', async function () {
+    it('should get by id with appends', async function () {
       try {
-        const res = await User.getUser(userId, ['roles'], {Models, logger});
+        const res = await User.getUser(userId, ['roles', 'contacts', 'settings'], {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);
@@ -216,7 +254,7 @@ describe('usersService tests', function () {
 
     it('should search users', async function () {
       try {
-        const res = await User.searchUsers({}, {Models, logger});
+        const res = await User.searchUsers({}, undefined, undefined, {Models, logger});
         assert.isUndefined(res);
       } catch (e) {
         assert.instanceOf(e, Error);

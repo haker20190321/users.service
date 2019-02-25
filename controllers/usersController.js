@@ -65,9 +65,15 @@ module.exports = {
    * @param {Function} writeError
    * @return {Promise<void>}
    */
-  searchUsers: async({searchParams, appends}, ext, writeError) => {
+  searchUsers: async({searchData}, ext, writeError) => {
     try {
-      return await usersService.searchUsers(searchParams.value, appends.value, ext);
+      const {
+        searchParams,
+        filter,
+        appends
+      } = searchData.value;
+
+      return await usersService.searchUsers(searchParams, filter, appends, ext);
     } catch(error) {
       return writeError(error.message);
     }

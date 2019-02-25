@@ -39,7 +39,14 @@ module.exports = {
 
       logger.debug('createUser: create user - success');
 
-      return user.get('woTs');
+      return user.fields([
+        'id',
+        'firstName',
+        'lastName',
+        'middleName',
+        'positionId',
+        'isActive'
+      ]);
     } catch(error) {
       logger.debug('userService.createUser: error catch');
 
@@ -74,7 +81,14 @@ module.exports = {
 
     logger.debug('userService.updateUser: update user success');
 
-    return user.get('woTs');
+    return user.fields([
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ]);
   },
   /**
    * Get user by user id
@@ -91,6 +105,15 @@ module.exports = {
 
     const options = {};
 
+    const fields = [
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ];
+
     if (appends.includes('roles')) {
       options.include = [{
         model: Models.Role,
@@ -106,6 +129,25 @@ module.exports = {
           }
         }]
       }];
+      fields.push('roles');
+    }
+
+    if (appends.includes('contacts')) {
+      options.include.push({
+        model: Models.Contact,
+        as: 'contacts',
+        attributes: ['type', 'value']
+      });
+      fields.push('contacts');
+    }
+
+    if (appends.includes('settings')) {
+      options.include.push({
+        model: Models.Setting,
+        as: 'settings',
+        attributes: ['key', 'value']
+      });
+      fields.push('settings');
     }
 
     const user = await Models.User.findByPk(userId, options);
@@ -117,11 +159,7 @@ module.exports = {
       throw new Error(`user with id ${userId} is missing`);
     }
 
-    if (appends.includes('roles')) {
-      return {...user.get('woTs'), roles: user.roles};
-    }
-
-    return user.get('woTs');
+    return user.fields(fields);
   },
   /**
    * Delete user by user id
@@ -150,24 +188,42 @@ module.exports = {
   },
   /**
    * Search users
-   *
-   * @param params
-   * @param {Object} ext
+   * @param {Object} searchParams
+   * @param {Object} filter
+   * @param {Array} appends
+   * @param {Object} Models
+   * @param {Object} logger
    * @return {*[]}
-   * @param appends
    */
-  searchUsers: async({limit, offset, where, order}, appends = [], {Models, logger}) => {
+  searchUsers: async(searchParams, filter = {}, appends = [], {Models, logger}) => {
     logger.debug('userService.searchUsers: init');
-    logger.debug('userService.searchUsers: search users');
+
+    const {
+      limit = 1000,
+      offset = 0,
+      where = {},
+      order = []
+    } = searchParams;
+
     const options = {
       limit,
       offset,
       where,
-      order
+      order,
+      include: []
     };
 
+    const fields = [
+      'id',
+      'firstName',
+      'lastName',
+      'middleName',
+      'positionId',
+      'isActive'
+    ];
+
     if (appends.includes('roles')) {
-      options.include = [{
+      options.include.push({
         model: Models.Role,
         as: 'roles',
         through: {
@@ -180,20 +236,46 @@ module.exports = {
             attributes: []
           }
         }]
-      }];
+      });
+      fields.push('roles');
     }
+
+    if (appends.includes('contacts')) {
+      options.include.push({
+        model: Models.Contact,
+        as: 'contacts',
+        attributes: ['type', 'value']
+      });
+      fields.push('contacts');
+    }
+
+    if (appends.includes('settings')) {
+      options.include.push({
+        model: Models.Setting,
+        as: 'settings',
+        attributes: ['key', 'value']
+      });
+      fields.push('settings');
+    }
+
+    if (filter.contacts) {
+      const contacts = await Models.Contact.findAll({
+        where: filter.contacts.where,
+        attributes: ['userId']
+      });
+
+      options.where.id = {
+        $in: contacts.map((item) => item.userId)
+      };
+    }
+
+    logger.debug('userService.searchUsers: search users');
 
     const users = await Models.User.findAll(options);
 
     logger.debug('userService.searchUsers: search users success');
 
-    return users.map((item) => {
-      if (appends.includes('roles')) {
-        return {...item.get('woTs'), roles: item.roles};
-      }
-
-      return item.get('woTs');
-    });
+    return users.map((item) => item.fields(fields));
   },
   /**
    * Set user relationship

@@ -22,6 +22,32 @@ const sequelize = new Sequelize({...config,
     paranoid: true
   }});
 
+Sequelize.Model.prototype.woTs = function() {
+  const values = {...this.get()};
+
+  ['createdAt', 'updatedAt', 'deletedAt'].forEach((field) => {
+    if (typeof values[field] !== 'undefined') {
+      delete values[field];
+    }
+  });
+
+  return values;
+};
+
+Sequelize.Model.prototype.fields = function(fields = []) {
+  const values = {};
+
+  fields.forEach((field) => {
+    const val = this.get(field);
+
+    if (typeof val !== 'undefined') {
+      values[field] = val;
+    }
+  });
+
+  return values;
+};
+
 fs
   .readdirSync(__dirname)
   .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))

@@ -11,7 +11,9 @@ const Models = require('./db/models');
 const OAuth = require('./components/oauth');
 
 const service = new Service({
-  specDoc: path.resolve(__dirname, './specifications/users.service.yaml'),
+  specDoc: path.resolve(__dirname, './specifications/users.service.yml'),
+  router: true,
+  validator: true,
   controllers: path.resolve(__dirname, 'controllers'),
   db: {
     connection,
