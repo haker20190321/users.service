@@ -6,7 +6,7 @@ const run = async() => {
   await Models.Contact.truncate({cascade: true, force: true});
 
   try {
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 30; i++) {
       const users = [];
       const contacts = [];
 
