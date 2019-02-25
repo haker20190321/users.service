@@ -166,16 +166,20 @@ describe('contactsController test', function () {
     });
 
     it('should deleteUserContacts', async function () {
-      const searchParams = {
-        value: {
-          where: {
-            userId: user.id,
-            type: 'phone'
+      const params = {
+        searchParams: {
+          value: {
+            where: {
+              type: 'phone',
+            }
           }
+        },
+        userId: {
+          value: user.id
         }
       };
       
-      const res = await contactsController.deleteUserContacts({searchParams}, ext, errorLog);
+      const res = await contactsController.deleteUserContacts(params, ext, errorLog);
 
       assert.isArray(res);
       assert.isNotEmpty(res);
@@ -288,17 +292,19 @@ describe('contactsController test', function () {
     });
 
     it('should deleteUserContacts', async function () {
-      const searchParams = {
-        value: {
-          where: {
-            userId: user.id,
-            type: 'phone',
-            id: 0
+      const params = {
+        searchParams: {
+          value: {
+            where: {
+              type: 'phone',
+              id: 0
+            }
           }
-        }
+        },
+        userId: user.id
       };
 
-      const res = await contactsController.deleteUserContacts({searchParams}, ext, errorLog);
+      const res = await contactsController.deleteUserContacts(params, ext, errorLog);
 
       assert.isUndefined(res);
     });

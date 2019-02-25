@@ -71,13 +71,18 @@ module.exports = {
   /**
    * Delete user contacts
    * @param searchParams
+   * @param userId
    * @param ext
    * @param writeError
    * @return {Promise<*>}
    */
-  deleteUserContacts: async({searchParams}, ext, writeError) => {
+  deleteUserContacts: async({searchParams, userId}, ext, writeError) => {
+    const {where} = searchParams.value;
+
+    where.userId = userId.value;
+
     try {
-      return await contactsService.deleteUserContacts(searchParams.value, ext);
+      return await contactsService.deleteUserContacts({where}, ext);
     } catch(error) {
       return writeError(error.message);
     }
